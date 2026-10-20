@@ -1,0 +1,928 @@
+:root {
+  color-scheme: light;
+
+  /* C-RAW's own site (crawindia.com) is stark black-on-paper editorial --
+     this is the same typographic language (Manrope body, DM Mono for
+     tracked data/kicker labels, Playfair Display italic reserved for one
+     emphasis word) on softer pastel working surfaces instead of literal
+     black ink, since this is a tool used daily, not a landing page. */
+  --surface-page: #f3f4fb; /* soft lavender-paper */
+  --surface-1: #ffffff;
+  --surface-sunken: #edeffa;
+  --surface-tint: #eef1fc;
+  --text-primary: #14151c;
+  --text-secondary: #585c6b;
+  --text-muted: #666b82; /* darkened from #8b8fa3 -- ~3.7:1 on white, below the 4.5:1 minimum, and this color now carries a lot of small DM Mono label text */
+  --gridline: #e6e8f3;
+  --baseline: #c7cae0;
+  --border: rgba(20, 21, 28, 0.1);
+
+  --shadow-card: 0 1px 2px rgba(30, 32, 50, 0.04), 0 10px 24px -16px rgba(30, 32, 50, 0.16);
+  --shadow-pop: 0 4px 10px rgba(30, 32, 50, 0.06), 0 16px 32px -12px rgba(30, 32, 50, 0.2);
+
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 7px;
+
+  --font-ui: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Manrope", system-ui, sans-serif;
+  /* Tracked data/kicker labels -- card titles, stat labels, table headers,
+     chip text -- echo crawindia.com's own use of DM Mono for exactly this
+     "small tracked utility label" role. */
+  --font-mono: "DM Mono", "SFMono-Regular", Consolas, monospace;
+  /* One signature emphasis moment per page (see PageHeader), not a general
+     body face -- mirrors the parent site's "the *signals* of democracy". */
+  --font-accent: "Playfair Display", Georgia, serif;
+
+  /* One qualitative palette for every chart/series/party in the app --
+     unchanged in hue from the previous system and left alone here by
+     design: these carry meaning (legends, party identity) that a palette
+     refresh must not disturb. */
+  --series-1: #2563eb; /* blue */
+  --series-2: #e8703a; /* orange */
+  --series-3: #15998a; /* teal */
+  --series-4: #d79a00; /* amber */
+  --series-5: #d6558c; /* magenta */
+  --series-6: #3f9142; /* green */
+  --series-7: #7c5cd6; /* violet */
+  --series-8: #d64545; /* red */
+
+  --status-good: #1a9150;
+  --status-warning: #c8860a;
+  --status-serious: #d47a4a;
+  --status-critical: #c73636;
+}
+
+/*
+ * No automatic OS-driven dark mode -- the dashboard matches ukac-dashboard's
+ * always-light look by default. :root[data-theme="dark"] below is kept for
+ * a possible future manual toggle, but nothing switches it on its own.
+ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-page: #111214;
+  --surface-1: #1b1c1f;
+  --surface-sunken: #222327;
+  --text-primary: #f1f0ec;
+  --text-secondary: #c3c2b7;
+  --text-muted: #8f9198;
+  --gridline: #2d2e31;
+  --baseline: #3a3b3e;
+  --border: rgba(255, 255, 255, 0.1);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 24px -16px rgba(0, 0, 0, 0.5);
+  --shadow-pop: 0 4px 10px rgba(0, 0, 0, 0.35), 0 16px 32px -12px rgba(0, 0, 0, 0.6);
+
+  --series-1: #5b93f5;
+  --series-2: #ef8a57;
+  --series-3: #35b7a6;
+  --series-4: #e0ac2c;
+  --series-5: #e27aa6;
+  --series-6: #5db261;
+  --series-7: #9a81e8;
+  --series-8: #e2696b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numbers line up in a monospace-width style wherever they appear --
+   stat tiles, table cells, chart labels -- so columns of figures read as
+   columns instead of a ragged edge. */
+table,
+.stat-tile .value,
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+a {
+  color: var(--series-1);
+}
+
+:focus-visible {
+  outline: 2px solid var(--series-1);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Browser chrome the design doesn't draw but still ships with -- text
+   selection and the scrollbar otherwise fall back to the OS default blue
+   and a plain gray bar, which look like no theme was applied at all. */
+::selection {
+  background: color-mix(in srgb, var(--series-1) 28%, transparent);
+  color: var(--text-primary);
+}
+
+* {
+  scrollbar-color: var(--baseline) transparent;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--baseline);
+  border-radius: 999px;
+  border: 2px solid var(--surface-page);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/*
+ * App header: title, then the PC/AC scope filters, then the 3-page nav --
+ * in that reading order, not a single nav bar. The filters are shared
+ * across all three pages (lifted to Layout, passed via Outlet context),
+ * not per-page state, so a constituency picked once stays selected while
+ * clicking through pages -- the point for a client walkthrough.
+ */
+.app-header {
+  flex-shrink: 0;
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  position: sticky;
+  top: 0;
+  /* Leaflet's own panes (tooltip/popup panes especially) use z-index up to
+     ~700, which beat this sticky header's old z-index: 20 on scroll -- the
+     map rendered on top of the header instead of under it. 1000 clears
+     every Leaflet pane with room to spare. */
+  z-index: 1000;
+  /* Forces this element's own stacking context, so nothing below it (on
+     any page, not just ones with a map) can ever paint above it on scroll
+     regardless of that descendant's own z-index. */
+  isolation: isolate;
+}
+
+.app-header-top {
+  padding: 16px 32px 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand h1 {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.brand .subtitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--series-1);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 2px;
+}
+
+.app-header-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.topnav-name {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.app-header-user button.primary {
+  padding: 7px 14px;
+}
+
+.global-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 32px 14px;
+  flex-wrap: wrap;
+}
+
+.global-filters-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-right: 2px;
+}
+
+.page-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 28px;
+  border-top: 1px solid var(--gridline);
+}
+
+.page-tab {
+  display: block;
+  padding: 12px 16px 11px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.12s ease, border-color 0.12s ease;
+}
+
+.page-tab.active {
+  color: var(--series-1);
+  border-bottom-color: var(--series-1);
+}
+
+.page-tab:hover:not(.active) {
+  color: var(--text-primary);
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 32px 56px;
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+.role-badge {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: color-mix(in srgb, var(--series-3) 16%, transparent);
+  color: var(--series-3);
+}
+
+@media (max-width: 900px) {
+  .app-header-top {
+    padding: 14px 20px 12px;
+  }
+  .global-filters {
+    padding: 0 20px 12px;
+  }
+  .page-tabs {
+    padding: 0 12px;
+    overflow-x: auto;
+  }
+  .main-content {
+    padding: 20px 16px 40px;
+  }
+}
+
+.page-header {
+  margin-bottom: 22px;
+}
+
+.page-header h2 {
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.page-header h2 em {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 500;
+  color: var(--series-1);
+}
+
+.page-header p {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  max-width: 72ch;
+}
+
+/* Tables can run wider than their card on tablet/mobile (long candidate
+   names, 7-column respondent lists) -- this scrolls the table instead of
+   the table overflowing the card and the whole page gaining horizontal
+   scroll. */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chart-caption {
+  margin: -10px 0 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* DonutChartCard's own layout -- chart left, plain HTML legend right. The
+   chart wrapper grows to fill whatever width the card actually has (a
+   fixed pixel chart stayed small and left a dead gap on a wide card,
+   which is what this replaces); the legend keeps its own natural width
+   rather than being stretched, since a 2-4 item list doesn't need to fill
+   anything to stay readable. */
+.donut-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.donut-chart-wrap {
+  flex: 1 1 280px;
+  min-width: 180px;
+}
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.donut-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.donut-legend .dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.donut-legend .name {
+  white-space: nowrap;
+}
+
+.donut-legend .pct {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-left: 2px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.filter-row select,
+.filter-row input,
+select,
+input[type="text"] {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: var(--font-ui);
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.filter-row select:hover,
+.filter-row input:hover {
+  border-color: color-mix(in srgb, var(--text-primary) 25%, var(--border));
+}
+
+.filter-row select:focus-visible,
+.filter-row input:focus-visible {
+  outline: none;
+  border-color: var(--series-1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--series-1) 18%, transparent);
+}
+
+.cross-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  min-height: 36px;
+  margin-bottom: 16px;
+}
+
+.cross-filter-bar.empty {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--series-1) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--series-1) 32%, transparent);
+  color: var(--series-1);
+  border-radius: 999px;
+  padding: 6px 8px 6px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.filter-chip button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 15px;
+  line-height: 1;
+  padding: 0 4px;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.filter-chip button:hover {
+  background: color-mix(in srgb, var(--series-1) 20%, transparent);
+}
+
+.clear-filters-btn {
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  color: var(--text-secondary);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clear-filters-btn:hover {
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+}
+
+.grid {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  /* Cards hold different chart types with very different natural heights
+     (e.g. a 10-row occupation bar chart next to a 4-row gender one) --
+     default stretch would pad the shorter card with dead space to match
+     the tallest sibling in its row. */
+  align-items: start;
+}
+
+/*
+ * Fixed column counts, not auto-fit -- auto-fit with a minmax track lets the
+ * browser pack in as many tracks as fit the viewport, so a "2-column"
+ * section with 3 children rendered 3-across on a wide screen (not a
+ * rounding edge case, the literal common case). A true fixed count is what
+ * "N side by side" means; the breakpoint below is what makes it responsive.
+ */
+.grid.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid.cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 1200px) {
+  .grid.cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .grid.cols-2,
+  .grid.cols-3,
+  .grid.cols-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Section headers -- bare <h3>s used between card groups ("Who works —
+   workforce composition"), one visual step above a card's own title so the
+   two-level hierarchy (section > card) stays legible at a glance. */
+h2,
+h3 {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+h3 {
+  font-size: 17px;
+}
+
+/* No box-shadow -- a soft floating shadow on every card is the generic
+   SaaS-dashboard tell. A plain hairline border against the pastel page is
+   enough to read as a contained panel without the "card catalog" look. */
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+}
+
+.card h3 {
+  margin: 0 0 14px;
+  font-size: 15.5px;
+}
+
+/* .card-title used to be a small muted tracked-caps "kicker" sitting above
+   each chart's plot. A kicker/eyebrow above a heading has no legitimate
+   use here -- it's decoration standing in for hierarchy a real heading
+   already carries. This is now just that heading. */
+.card-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 16px;
+  color: var(--text-primary);
+}
+
+/* A StatTile is plain typography, not a tile: no box, no background, no
+   colored border-left. A bordered, tinted "hero metric" card is the
+   generic-dashboard default (and nesting one inside another .card, as the
+   Retrospective overview did, is a literal card-in-a-card) -- here color
+   on the number itself is the only signal, which is enough: "brand" marks
+   a key metric, "good"/"bad" a signed finding (turnout up vs down),
+   "neutral" a static reference count that shouldn't compete for
+   attention. */
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-tile .value {
+  font-family: var(--font-display);
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.stat-tile .label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.stat-tile-brand .value {
+  color: var(--series-1);
+}
+
+.stat-tile-good .value {
+  color: var(--status-good);
+}
+
+.stat-tile-bad .value {
+  color: var(--status-critical);
+}
+
+.stat-tile-neutral .value {
+  color: var(--text-primary);
+}
+
+.map-card {
+  grid-column: 1 / -1;
+  height: 480px;
+}
+
+.map-card .leaflet-container {
+  height: 420px;
+}
+
+/* Every Leaflet map in the app, not just .map-card's -- without this the
+   tiles render square-cornered inside a rounded .card, so the map visibly
+   overflows the card's corner radius at all four corners. */
+.leaflet-container {
+  width: 100%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* MapView's per-AC response-count bubbles (see bubbleIcon in MapView.tsx)
+   -- Leaflet's default divIcon wrapper carries its own border/background,
+   stripped here so only the inner circle (sized and colored per-bucket
+   inline, since that varies per marker) shows. */
+.resp-bubble {
+  background: transparent !important;
+  border: none !important;
+}
+
+.resp-bubble div {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 12px;
+  border: 2px solid var(--surface-1);
+  box-shadow: var(--shadow-pop);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--gridline);
+}
+
+thead th {
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border);
+}
+
+thead th:first-child {
+  border-top-left-radius: var(--radius-sm);
+}
+
+thead th:last-child {
+  border-top-right-radius: var(--radius-sm);
+}
+
+/* Numeric columns (vote share, turnout, votes, electors...) right-align so
+   the figures themselves line up into a readable column, not just their
+   cell boundaries. */
+th.num,
+td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+tbody tr {
+  transition: background 0.1s ease;
+}
+
+tbody tr:hover {
+  background: var(--surface-sunken);
+}
+
+/* Alternates by *group* (e.g. every other AC's 4-year block), not by row --
+   banding a group of rows together is what actually shows "these rows go
+   together," where per-row zebra striping would just add visual noise. */
+tr.row-group-shaded {
+  background: var(--surface-sunken);
+}
+
+tr.row-group-shaded:hover {
+  background: var(--gridline);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.pii-pill {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--status-critical);
+  border: 1px solid var(--status-critical);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+button.primary {
+  background: var(--series-1);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: filter 0.12s ease, transform 0.04s ease;
+}
+
+button.primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+button.primary:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.login-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--surface-page);
+}
+
+.login-card {
+  width: 380px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  padding: 32px;
+}
+
+.login-card h1 {
+  font-size: 19px;
+  margin: 0 0 4px;
+}
+
+.login-card p.subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 24px;
+}
+
+.login-card label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  margin-top: 14px;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.error-text {
+  color: var(--status-critical);
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+.empty-state {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 28px 0;
+  text-align: center;
+}
+
+.timeline-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.timeline-node {
+  flex: 0 0 220px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  background: var(--surface-sunken);
+}
+
+.timeline-node .yr {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.timeline-node .winner {
+  font-family: var(--font-display);
+  font-size: 15.5px;
+  font-weight: 700;
+  margin: 4px 0 6px;
+}
+
+.party-tag {
+  display: inline-block;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.timeline-node .meta {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.swing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-right: 6px;
+}
+
+.swing-up {
+  background: color-mix(in srgb, var(--status-good) 16%, transparent);
+  color: var(--status-good);
+}
+
+.swing-down {
+  background: color-mix(in srgb, var(--status-critical) 14%, transparent);
+  color: var(--status-critical);
+}
+
+.margin-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.margin-very-close {
+  background: color-mix(in srgb, var(--status-critical) 16%, transparent);
+  color: var(--status-critical);
+}
+
+.margin-close {
+  background: color-mix(in srgb, var(--status-warning) 20%, transparent);
+  color: #8a5a00;
+}
+
+.margin-comfortable {
+  background: color-mix(in srgb, var(--status-good) 14%, transparent);
+  color: var(--status-good);
+}

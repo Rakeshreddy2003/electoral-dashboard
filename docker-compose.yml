@@ -1,0 +1,61 @@
+# Deploys the dashboard (frontend + API + sync worker + Postgres) on the same
+# AWS box as ODK Central, or a sibling instance.
+#
+# TLS/HTTPS is NOT terminated here -- this stack listens on plain HTTP
+# (frontend container on host port 8080 by default). Put it behind the box's
+# existing reverse proxy / Certbot setup, or add an nginx-proxy +
+# acme-companion pair in front of it, and restrict access to VPN/IP-allowlist
+# given the PII and political sensitivity of this data. Do not expose port
+# 8080 directly to the open internet.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: crawworkds
+      POSTGRES_USER: crawworkds
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - crawworkds_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crawworkds"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg2://crawworkds:${POSTGRES_PASSWORD}@db:5432/crawworkds
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES:-480}
+      ODK_BASE_URL: ${ODK_BASE_URL:?set ODK_BASE_URL in .env}
+      ODK_EMAIL: ${ODK_EMAIL:?set ODK_EMAIL in .env}
+      ODK_PASSWORD: ${ODK_PASSWORD:?set ODK_PASSWORD in .env}
+      ODK_PROJECT_ID: ${ODK_PROJECT_ID:-1}
+      ODK_FORM_ID: ${ODK_FORM_ID:-na_livelihoods_survey_v4}
+      ODK_SYNC_INTERVAL_MINUTES: ${ODK_SYNC_INTERVAL_MINUTES:-20}
+      # Temporary: skips login and role checks, every request is treated as
+      # admin. Set AUTH_DISABLED=false in .env (or unset it) to re-require
+      # login -- see backend/app/deps.py::get_current_user.
+      AUTH_DISABLED: ${AUTH_DISABLED:-false}
+    volumes:
+      - ./data:/data:ro
+    expose:
+      - "8000"
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  crawworkds_pgdata:

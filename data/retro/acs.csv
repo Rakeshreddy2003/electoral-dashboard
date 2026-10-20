@@ -1,0 +1,176 @@
+id,state_id,ac_no,ac_name,ac_type,seat_category,acmap_acId
+2,2,1,Ichchapuram,,,5679
+3,2,2,Palasa,,,5680
+4,2,3,Tekkali,,,5681
+5,2,4,Pathapatnam,,,5682
+6,2,5,Srikakulam,,,5683
+7,2,6,Amadalavalasa,,,5684
+8,2,7,Etcherla,,,5685
+9,2,8,Narasannapeta,,,5678
+10,2,9,Rajam (SC),,,5691
+11,2,10,Palakonda (ST),,,5671
+12,2,11,Kurupam (ST),,,5672
+13,2,12,Parvathipuram (SC),,,5673
+14,2,13,Salur (ST),,,5674
+15,2,14,Bobbili,,,5686
+16,2,15,Cheepurupalle,,,5687
+17,2,16,Gajapathinagaram,,,5688
+18,2,17,Nellimarla,,,5689
+19,2,18,Vizianagaram,,,5690
+20,2,19,Srungavarapukota,,,5692
+21,2,20,Bhimili,,,5693
+22,2,21,Visakhapatnam East,,,5694
+23,2,22,Visakhapatnam South,,,5695
+24,2,23,Visakhapatnam North,,,5696
+25,2,24,Visakhapatnam West,,,5697
+26,2,25,Gajuwaka,,,5698
+27,2,26,Chodavaram,,,5699
+28,2,27,Madugula,,,5700
+29,2,28,Araku Valley (ST),,,5675
+30,2,29,Paderu (ST),,,5676
+31,2,30,Anakapalle,,,5701
+32,2,31,Pendurthi,,,5702
+33,2,32,Yelamanchili,,,5703
+34,2,33,Payakaraopet (SC),,,5704
+35,2,34,Narsipatnam,,,5705
+36,2,35,Tuni,,,5706
+37,2,36,Prathipadu,,,5707
+38,2,37,Pithapuram,,,5708
+39,2,38,Kakinada Rural,,,5709
+40,2,39,Peddapuram,,,5710
+41,2,40,Anaparthy,,,5723
+42,2,41,Kakinada City,,,5711
+43,2,42,Ramachandrapuram,,,5713
+44,2,43,Mummidivaram,,,5714
+45,2,44,Amalapuram (SC),,,5715
+46,2,45,Razole (SC),,,5716
+47,2,46,Gannavaram (SC),,,5717
+48,2,47,Kothapeta,,,5718
+49,2,48,Mandapeta,,,5719
+50,2,49,Rajanagaram,,,5720
+51,2,50,Rajahmundry City,,,5721
+52,2,51,Rajahmundry Rural,,,5722
+53,2,52,Jaggampeta,,,5712
+54,2,53,Rampachodavaram (ST),,,5677
+55,2,54,Kovvur (SC),,,5725
+56,2,55,Nidadavole,,,5726
+57,2,56,Achanta,,,5727
+58,2,57,Palacole,,,5728
+59,2,58,Narasapuram,,,5729
+60,2,59,Bhimavaram,,,5730
+61,2,60,Undi,,,5731
+62,2,61,Tanuku,,,5732
+63,2,62,Tadepalligudem,,,5733
+64,2,63,Ungutur,,,5734
+65,2,64,Denduluru,,,5735
+66,2,65,Eluru,,,5736
+67,2,66,Gopalapuram (SC),,,5724
+68,2,67,Polavaram (ST),,,5737
+69,2,68,Chintalapudi (SC),,,5738
+70,2,69,Tiruvuru (SC),,,5754
+71,2,70,Nuzvid,,,5740
+72,2,71,Gannavaram,,,5717
+73,2,72,Gudivada,,,5742
+74,2,73,Kaikalur,,,5739
+75,2,74,Pedana,,,5743
+76,2,75,Machilipatnam,,,5744
+77,2,76,Avanigadda,,,5745
+78,2,77,Pamarru (SC),,,5746
+79,2,78,Penamaluru,,,5747
+80,2,79,Vijayawada West,,,5748
+81,2,80,Vijayawada Central,,,5749
+82,2,81,Vijayawada East,,,5750
+83,2,82,Mylavaram,,,5751
+84,2,83,Nandigama (SC),,,5752
+85,2,84,Jaggayyapeta,,,5753
+86,2,85,Pedakurapadu,,,5768
+87,2,86,Tadikonda (SC),,,5755
+88,2,87,Mangalagiri,,,5756
+89,2,88,Ponnur,,,5757
+90,2,89,Vemuru (SC),,,5769
+91,2,90,Repalle,,,5770
+92,2,91,Tenali,,,5761
+93,2,92,Bapatla,,,5771
+94,2,93,Prathipadu (SC),,,5758
+95,2,94,Guntur West,,,5759
+96,2,95,Guntur East,,,5760
+97,2,96,Chilakaluripet,,,5762
+98,2,97,Narasaraopet,,,5763
+99,2,98,Sattenapalle,,,5764
+100,2,99,Vinukonda,,,5765
+101,2,100,Gurajala,,,5766
+102,2,101,Macherla,,,5767
+103,2,102,Yerragondapalem (SC),,,5777
+104,2,103,Darsi,,,5778
+105,2,104,Parchur,,,5772
+106,2,105,Addanki,,,5773
+107,2,106,Chirala,,,5774
+108,2,107,Santhanuthalapadu (SC),,,5775
+109,2,108,Ongole,,,5776
+110,2,109,Kandukur,,,5819
+111,2,110,Kondapi (SC),,,5779
+112,2,111,Markapuram,,,5780
+113,2,112,Giddalur,,,5781
+114,2,113,Kanigiri,,,5782
+115,2,114,Kavali,,,5820
+116,2,115,Atmakur,,,5821
+117,2,116,Kovur,,,5822
+118,2,117,Nellore City,,,5823
+119,2,118,Nellore Rural,,,5824
+120,2,119,Sarvepalli,,,5825
+121,2,120,Gudur (SC),,,5826
+122,2,121,Sullurpeta (SC),,,5827
+123,2,122,Venkatagiri,,,5828
+124,2,123,Udayagiri,,,5818
+125,2,124,Badvel (SC),,,5811
+126,2,125,Rajampet,,,5836
+127,2,126,Kadapa,,,5817
+128,2,127,Kodur (SC),,,5837
+129,2,128,Rayachoti,,,5838
+130,2,129,Pulivendla,,,5812
+131,2,130,Kamalapuram,,,5813
+132,2,131,Jammalamadugu,,,5814
+133,2,132,Proddatur,,,5815
+134,2,133,Mydukur,,,5816
+135,2,134,Allagadda,,,5783
+136,2,135,Srisailam,,,5784
+137,2,136,Nandikotkur (SC),,,5785
+138,2,137,Kurnool,,,5796
+139,2,138,Panyam,,,5786
+140,2,139,Nandyal,,,5787
+141,2,140,Banaganapalle,,,5788
+142,2,141,Dhone,,,5789
+143,2,142,Pattikonda,,,5790
+144,2,143,Kodumur (SC),,,5791
+145,2,144,Yemmiganur,,,5792
+146,2,145,Mantralayam,,,5793
+147,2,146,Adoni,,,5794
+148,2,147,Alur,,,5795
+149,2,148,Rayadurg,,,5797
+150,2,149,Uravakonda,,,5798
+151,2,150,Guntakal,,,5799
+152,2,151,Tadpatri,,,5800
+153,2,152,Singanamala (SC),,,5801
+154,2,153,Anantapur Urban,,,5802
+155,2,154,Kalyandurg,,,5803
+156,2,155,Raptadu,,,5804
+157,2,156,Madakasira (SC),,,5805
+158,2,157,Hindupur,,,5806
+159,2,158,Penukonda,,,5807
+160,2,159,Puttaparthi,,,5808
+161,2,160,Dharmavaram,,,5809
+162,2,161,Kadiri,,,5810
+163,2,162,Thamballapalle,,,5832
+164,2,163,Pileru,,,5833
+165,2,164,Madanapalle,,,5834
+166,2,165,Punganur,,,5835
+167,2,166,Chandragiri,,,5839
+168,2,167,Tirupati,,,5829
+169,2,168,Srikalahasti,,,5830
+170,2,169,Satyavedu (SC),,,5831
+171,2,170,Nagari,,,5840
+172,2,171,Gangadhara Nellore (SC),,,5841
+173,2,172,Chittoor,,,5842
+174,2,173,Puthalapattu (SC),,,5843
+175,2,174,Palamaner,,,5844
+176,2,175,Kuppam,,,5845
