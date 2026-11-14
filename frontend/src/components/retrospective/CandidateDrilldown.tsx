@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { api } from "../../api/client";
-import { partyColor } from "./partyColors";
+import { partyColor, partyTagStyle } from "./partyColors";
 
 interface Candidate {
   year: number;
@@ -50,10 +50,10 @@ export default function CandidateDrilldown({ acName, years }: { acName: string; 
           <ResponsiveContainer width="100%" height={Math.max(220, rows.length * 32)}>
             <BarChart data={chartData} layout="vertical" margin={{ left: 12, right: 40 }}>
               <CartesianGrid stroke="var(--gridline)" horizontal={false} />
-              <XAxis type="number" stroke="var(--text-muted)" fontSize={12} unit="%" />
-              <YAxis type="category" dataKey="name" stroke="var(--text-muted)" fontSize={12} width={160} />
+              <XAxis type="number" stroke="var(--text-muted)" fontSize={13} unit="%" />
+              <YAxis type="category" dataKey="name" stroke="var(--text-muted)" fontSize={13} width={160} />
               <Tooltip
-                contentStyle={{ background: "var(--surface-1)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 13 }}
+                contentStyle={{ background: "var(--surface-1)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 14 }}
                 formatter={(value: number) => `${value.toFixed(1)}%`}
               />
               <Bar dataKey="voteShare" radius={[0, 4, 4, 0]} maxBarSize={22}>
@@ -80,7 +80,7 @@ export default function CandidateDrilldown({ acName, years }: { acName: string; 
                     <td>{r.position}</td>
                     <td>{r.candidate_name}</td>
                     <td>
-                      <span className="party-tag" style={{ background: partyColor(r.party) }}>
+                      <span className="party-tag" style={partyTagStyle(r.party)}>
                         {r.party}
                       </span>
                     </td>

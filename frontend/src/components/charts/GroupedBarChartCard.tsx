@@ -42,7 +42,7 @@ function YearTooltip({ active, yearLabel, row, seriesKeys, colorFor }: {
         borderRadius: 10,
         boxShadow: "var(--shadow-pop)",
         padding: "8px 12px",
-        fontSize: 13,
+        fontSize: 14,
         fontFamily: "var(--font-ui)",
       }}
     >
@@ -95,11 +95,11 @@ export default function GroupedBarChartCard({ title, caption, data, xKey, series
                   <ResponsiveContainer width="100%" height={340}>
                     <BarChart data={entries} margin={{ left: 4, right: 4, top: 8, bottom: 4 }} barCategoryGap="22%">
                       <CartesianGrid stroke="var(--gridline)" vertical={false} strokeDasharray="3 4" />
-                      <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={11} tickLine={false} axisLine={{ stroke: "var(--border)" }} interval={0} />
+                      <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={13} tickLine={false} axisLine={{ stroke: "var(--border)" }} interval={0} />
                       <YAxis
                         domain={yDomain}
                         stroke="var(--text-muted)"
-                        fontSize={12}
+                        fontSize={13}
                         allowDecimals={false}
                         width={i === 0 ? 34 : 0}
                         tick={i === 0}
@@ -120,11 +120,11 @@ export default function GroupedBarChartCard({ title, caption, data, xKey, series
                         {entries.map((e, ei) => (
                           <Cell key={ei} fill={colorFor(e.name)} fillOpacity={activeKey ? (e.name === activeKey ? 1 : 0.3) : 1} />
                         ))}
-                        <LabelList dataKey="value" position="top" formatter={hideZero as never} style={{ fontSize: 11, fontWeight: 700, fill: "var(--text-secondary)" }} />
+                        <LabelList dataKey="value" position="top" formatter={hideZero as never} style={{ fontSize: 14, fontWeight: 700, fill: "var(--text-secondary)" }} />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
-                  <div style={{ textAlign: "center", fontSize: 13, fontWeight: 600, color: "var(--text-muted)", marginTop: 4 }}>{row[xKey]}</div>
+                  <div style={{ textAlign: "center", fontSize: 14, fontWeight: 600, color: "var(--text-muted)", marginTop: 4 }}>{row[xKey]}</div>
                 </div>
               );
             })}

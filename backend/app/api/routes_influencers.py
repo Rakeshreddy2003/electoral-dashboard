@@ -15,6 +15,10 @@ from app.models import Role, SurveyResponse, User
 
 router = APIRouter(prefix="/api/influencers", tags=["influencers"])
 
+
+def _has_phone(r: SurveyResponse) -> bool:
+    return bool((r.contact_phone_1 or "").strip() or (r.contact_phone_2 or "").strip())
+
 CATEGORIES = ("Neutral Influencer", "Volunteer Army", "Not applicable")
 
 
@@ -77,7 +81,11 @@ def list_respondents(
             "contact_phone_1": r.contact_phone_1,
             "contact_phone_2": r.contact_phone_2,
         }
-        results.append(strip_pii(record, user.role))
+        stripped = strip_pii(record, user.role)
+        # Whether a number exists is not itself personal data, so every role
+        # can see how complete the contact list is.
+        stripped["has_phone"] = _has_phone(r)
+        results.append(stripped)
     return results
 
 
@@ -86,6 +94,7 @@ def export_csv(
     pc_name: str | None = Query(default=None),
     ac_name: str | None = Query(default=None),
     category: str | None = Query(default=None),
+    has_phone: str | None = Query(default=None, pattern="^(yes|no)$"),
     user: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
@@ -97,7 +106,9 @@ def export_csv(
         category,
     )
     rows = q.all()
-    audit_record(db, user.email, "export_pii", "influencers", detail=f"pc={pc_name} ac={ac_name} category={category} rows={len(rows)}")
+    if has_phone:
+        rows = [r for r in rows if _has_phone(r) == (has_phone == "yes")]
+    audit_record(db, user.email, "export_pii", "influencers", detail=f"pc={pc_name} ac={ac_name} category={category} has_phone={has_phone} rows={len(rows)}")
 
     buf = io.StringIO()
     writer = csv.writer(buf)

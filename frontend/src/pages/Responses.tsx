@@ -335,7 +335,7 @@ export default function Responses() {
           match the plan -- it's a security indicator, not a stated
           priority. */}
       <h3 style={{ margin: "28px 0 4px" }}>How well work pays, and how secure it is</h3>
-      <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--text-secondary)" }}>
+      <p style={{ margin: "0 0 12px", fontSize: 14, color: "var(--text-secondary)" }}>
         Raw indicators only, from {livelihood?.respondents_with_livelihood_data ?? 0} respondents whose profession module included
         earnings/skills/scheme questions. No combined "Livelihood Security" score is computed — the Reporting Plan defers
         benchmark thresholds and index weighting to after the pilot.
@@ -376,7 +376,7 @@ export default function Responses() {
       <BarChartCard title="Skills respondents report having (top 10)" data={livelihood?.top_skills_held ?? []} colorIndex={7} valueLabel="Respondents" />
 
       <h3 style={{ margin: "28px 0 4px" }}>Government scheme reach</h3>
-      <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--text-secondary)" }}>
+      <p style={{ margin: "0 0 12px", fontSize: 14, color: "var(--text-secondary)" }}>
         Of {livelihood?.scheme_funnel.eligible_modules_n ?? 0} respondents whose module asked about scheme support: only some
         modules ask the full aware → applied → received funnel (6 of 42); the rest ask only what was received, so "received"
         being larger than "aware" reflects that difference in question coverage, not a data error.

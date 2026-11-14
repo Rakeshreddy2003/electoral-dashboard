@@ -90,6 +90,52 @@ def winners_by_year(
     ]
 
 
+@router.get("/party-summary")
+def party_summary(pc_name: str | None = Query(default=None), _=Depends(require_any), db: Session = Depends(get_db)):
+    """
+    Assembly votes and seats per party per year. A party absent from a
+    year's list fielded no candidate in scope that year -- callers must
+    show that as "did not contest", not as zero.
+    """
+    q = db.query(EciResult).filter(EciResult.level == "AC")
+    if pc_name:
+        q = q.filter(EciResult.pc_name == pc_name)
+
+    by_year: dict[int, dict[str, dict[str, int]]] = {}
+    for r in q.all():
+        party = by_year.setdefault(r.year, {}).setdefault(r.party or "IND", {"votes": 0, "seats": 0})
+        party["votes"] += r.votes or 0
+        if r.position == 1:
+            party["seats"] += 1
+
+    out = []
+    for year in sorted(by_year):
+        parties = by_year[year]
+        total_votes = sum(p["votes"] for p in parties.values())
+        total_seats = sum(p["seats"] for p in parties.values())
+        out.append(
+            {
+                "year": year,
+                "total_votes": total_votes,
+                "total_seats": total_seats,
+                "parties": sorted(
+                    (
+                        {
+                            "party": name,
+                            "votes": p["votes"],
+                            "seats": p["seats"],
+                            "vote_share": round(100 * p["votes"] / total_votes, 2) if total_votes else None,
+                            "seat_share": round(100 * p["seats"] / total_seats, 2) if total_seats else None,
+                        }
+                        for name, p in parties.items()
+                    ),
+                    key=lambda p: (-p["seats"], -p["votes"]),
+                ),
+            }
+        )
+    return out
+
+
 @router.get("/turnout-trend")
 def turnout_trend(pc_name: str | None = Query(default=None), _=Depends(require_any), db: Session = Depends(get_db)):
     """Average AC-level (assembly) turnout by year, optionally scoped to one PC's 7 ACs."""

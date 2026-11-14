@@ -46,7 +46,7 @@ export default function DemographicsCard({ acName, pcName }: { acName?: string; 
   return (
     <div style={{ marginBottom: 20 }}>
       <h3 style={{ margin: "0 0 4px" }}>Socio-economic baseline ({acName || pcName || "all 5 PCs"})</h3>
-      <p style={{ margin: "0 0 12px", fontSize: 13, color: "var(--text-secondary)" }}>
+      <p style={{ margin: "0 0 12px", fontSize: 14, color: "var(--text-secondary)" }}>
         Pre-survey baseline from {data.secretariat_count} secretariats, not survey findings. The BPL proxy predates AP's 2024
         change of government and is tied to welfare schemes that may since have been renamed or discontinued — treat it as a
         baseline-era figure to compare the survey against, not a current one.
