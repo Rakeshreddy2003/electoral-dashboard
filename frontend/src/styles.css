@@ -2017,3 +2017,54 @@ td {
     gap: 12px;
   }
 }
+
+.callout-warning {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  margin: 0 0 20px;
+  border: 1px solid color-mix(in srgb, var(--status-critical) 45%, transparent);
+  background: color-mix(in srgb, var(--status-critical) 8%, var(--surface-1));
+  border-radius: var(--radius-md);
+}
+
+.callout-warning strong {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--status-critical);
+}
+
+.callout-warning p {
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: var(--text-primary);
+  max-width: 70ch;
+}
+
+.callout-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.callout-actions button {
+  font-size: 15px;
+  padding: 10px 16px;
+}
+
+.callout-actions .secondary-action {
+  font-weight: 700;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: var(--font-ui);
+}
+
+button.primary {
+  background: var(--indigo);
+}

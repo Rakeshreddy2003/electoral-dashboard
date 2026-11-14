@@ -177,70 +177,22 @@ def sync_once() -> int:
             db.commit()
 
         client = _build_client()
-        table = client.submissions.get_table(
-            form_id=settings.odk_form_id,
-            project_id=settings.odk_project_id,
-        )
-        rows = table.get("value", table) if isinstance(table, dict) else table
+        watermark = state.last_submission_update
+        latest_seen = watermark
 
-        latest_seen = state.last_submission_update
+        for rows in _fetch_pages(client, watermark):
+            latest_seen = _store_rows(db, rows, watermark, latest_seen)
+            pulled += len(rows)
+            # Each page is committed and dropped before the next is fetched,
+            # so memory stays at one page however large the form grows.
+            db.commit()
+            db.expunge_all()
 
-        for sub in rows:
-            system = sub.get("__system", {})
-            instance_id = system.get("instanceId") or sub.get("meta", {}).get("instanceID")
-            if not instance_id:
-                continue
-
-            submission_date = _parse_odk_datetime(system.get("submissionDate"))
-            updated_date = _parse_odk_datetime(system.get("updatedAt")) or submission_date
-
-            if state.last_submission_update and updated_date and updated_date <= state.last_submission_update:
-                continue
-
-            flat = _flatten_submission(sub)
-
-            existing = db.query(SurveyResponse).filter(SurveyResponse.odk_instance_id == instance_id).first()
-            record = existing or SurveyResponse(odk_instance_id=instance_id)
-
-            record.submitted_at = submission_date
-            record.updated_at = updated_date
-            record.submitter_name = system.get("submitterName")
-            record.parliamentary_constituency = flat.get("parliamentary_constituency")
-            record.assembly_constituency = flat.get("assembly_constituency")
-            record.ac_no = ac_to_no(flat.get("assembly_constituency"))
-            record.latitude = flat.get("latitude")
-            record.longitude = flat.get("longitude")
-            record.gender = flat.get("gender")
-            record.age_group = flat.get("age_group")
-            record.marital_status = flat.get("marital_status")
-            record.education = flat.get("education")
-            record.occupation = flat.get("occupation")
-            record.employment_arrangement = flat.get("employment_arrangement")
-            record.household_size = _to_int(flat.get("household_size"))
-            record.monthly_expenditure = flat.get("monthly_expenditure")
-            record.has_second_income = flat.get("has_second_income")
-            record.second_occupation = flat.get("second_occupation")
-            record.profession_module_json = flat.get("profession_module_json")
-            record.livelihood_indicators_json = flat.get("livelihood_indicators_json")
-            record.top_priority_problem = flat.get("top_priority_problem")
-            record.trust_score = flat.get("trust_score")
-            record.scheme_awareness = flat.get("scheme_awareness")
-            record.healthcare_access = flat.get("healthcare_access")
-            record.schooling_access = flat.get("schooling_access")
-            record.emergency_line_usage = flat.get("emergency_line_usage")
-            record.respondent_category = flat.get("respondent_category")
-            record.contact_name = flat.get("contact_name")
-            record.contact_phone_1 = flat.get("contact_phone_1")
-            record.contact_phone_2 = flat.get("contact_phone_2")
-            record.raw_json = json.dumps(sub)
-
-            if not existing:
-                db.add(record)
-            pulled += 1
-
-            if updated_date and (latest_seen is None or updated_date > latest_seen):
-                latest_seen = updated_date
-
+        # The watermark only moves once every page is in: pages arrive
+        # newest first, so moving it early would skip older unseen rows if
+        # a run died part-way. Re-reading rows after a failed run is safe
+        # because rows are upserted by instance id.
+        state = db.query(SyncState).filter(SyncState.form_id == settings.odk_form_id).first()
         state.last_submission_update = latest_seen
         state.last_run_at = datetime.now(UTC).replace(tzinfo=None)
         db.commit()
@@ -252,6 +204,92 @@ def sync_once() -> int:
         raise
     finally:
         db.close()
+
+
+PAGE_SIZE = 200
+
+
+def _fetch_pages(client: Client, watermark: datetime | None):
+    """Yields submissions newer than the watermark, PAGE_SIZE at a time."""
+    odata_filter = None
+    if watermark:
+        stamp = watermark.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+        odata_filter = f"__system/submissionDate gt {stamp} or __system/updatedAt gt {stamp}"
+    skip = 0
+    while True:
+        table = client.submissions.get_table(
+            form_id=settings.odk_form_id,
+            project_id=settings.odk_project_id,
+            skip=skip,
+            top=PAGE_SIZE,
+            filter=odata_filter,
+        )
+        rows = table.get("value", table) if isinstance(table, dict) else table
+        if not rows:
+            return
+        yield rows
+        if len(rows) < PAGE_SIZE:
+            return
+        skip += PAGE_SIZE
+
+
+def _store_rows(db, rows: list[dict], watermark: datetime | None, latest_seen: datetime | None) -> datetime | None:
+    for sub in rows:
+        system = sub.get("__system", {})
+        instance_id = system.get("instanceId") or sub.get("meta", {}).get("instanceID")
+        if not instance_id:
+            continue
+
+        submission_date = _parse_odk_datetime(system.get("submissionDate"))
+        updated_date = _parse_odk_datetime(system.get("updatedAt")) or submission_date
+
+        if watermark and updated_date and updated_date <= watermark:
+            continue
+
+        flat = _flatten_submission(sub)
+
+        existing = db.query(SurveyResponse).filter(SurveyResponse.odk_instance_id == instance_id).first()
+        record = existing or SurveyResponse(odk_instance_id=instance_id)
+
+        record.submitted_at = submission_date
+        record.updated_at = updated_date
+        record.submitter_name = system.get("submitterName")
+        record.parliamentary_constituency = flat.get("parliamentary_constituency")
+        record.assembly_constituency = flat.get("assembly_constituency")
+        record.ac_no = ac_to_no(flat.get("assembly_constituency"))
+        record.latitude = flat.get("latitude")
+        record.longitude = flat.get("longitude")
+        record.gender = flat.get("gender")
+        record.age_group = flat.get("age_group")
+        record.marital_status = flat.get("marital_status")
+        record.education = flat.get("education")
+        record.occupation = flat.get("occupation")
+        record.employment_arrangement = flat.get("employment_arrangement")
+        record.household_size = _to_int(flat.get("household_size"))
+        record.monthly_expenditure = flat.get("monthly_expenditure")
+        record.has_second_income = flat.get("has_second_income")
+        record.second_occupation = flat.get("second_occupation")
+        record.profession_module_json = flat.get("profession_module_json")
+        record.livelihood_indicators_json = flat.get("livelihood_indicators_json")
+        record.top_priority_problem = flat.get("top_priority_problem")
+        record.trust_score = flat.get("trust_score")
+        record.scheme_awareness = flat.get("scheme_awareness")
+        record.healthcare_access = flat.get("healthcare_access")
+        record.schooling_access = flat.get("schooling_access")
+        record.emergency_line_usage = flat.get("emergency_line_usage")
+        record.respondent_category = flat.get("respondent_category")
+        record.contact_name = flat.get("contact_name")
+        record.contact_phone_1 = flat.get("contact_phone_1")
+        record.contact_phone_2 = flat.get("contact_phone_2")
+        record.raw_json = json.dumps(sub)
+
+        if not existing:
+            db.add(record)
+
+        if updated_date and (latest_seen is None or updated_date > latest_seen):
+            latest_seen = updated_date
+
+    return latest_seen
 
 
 if __name__ == "__main__":

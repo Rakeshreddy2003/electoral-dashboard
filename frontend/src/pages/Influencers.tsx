@@ -13,6 +13,7 @@ interface Respondent {
   ac_name: string | null;
   category: string | null;
   occupation: string | null;
+  has_phone: boolean;
   contact_name?: string;
   contact_phone_1?: string;
   contact_phone_2?: string;
@@ -39,7 +40,8 @@ export default function Influencers() {
   const { pcName, acName } = useGlobalFilters();
   const [category, setCategory] = useState("");
   const [summary, setSummary] = useState<{ category: string; count: number }[]>([]);
-  const [rows, setRows] = useState<Respondent[]>([]);
+  const [allRows, setRows] = useState<Respondent[]>([]);
+  const [phoneFilter, setPhoneFilter] = useState<"" | "yes" | "no">("");
 
   const isAdmin = role === "admin";
 
@@ -66,6 +68,29 @@ export default function Influencers() {
     };
   }, [pcName, acName, category]);
 
+  const rows = useMemo(() => (phoneFilter ? allRows.filter((r) => r.has_phone === (phoneFilter === "yes")) : allRows), [allRows, phoneFilter]);
+  const missing = allRows.filter((r) => !r.has_phone);
+  const missingByPlace = tally(missing.map((r) => (pcName ? r.ac_name : r.pc_name)), 3);
+
+  function exportCsv() {
+    const params = new URLSearchParams();
+    if (pcName) params.set("pc_name", pcName);
+    if (acName) params.set("ac_name", acName);
+    if (category) params.set("category", category);
+    if (phoneFilter) params.set("has_phone", phoneFilter);
+    const token = localStorage.getItem("access_token");
+    fetch(`/api/influencers/export.csv?${params.toString()}`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined })
+      .then((res) => res.blob())
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = phoneFilter === "yes" ? "influencers_with_phone.csv" : phoneFilter === "no" ? "influencers_missing_phone.csv" : "influencers_and_volunteers.csv";
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+  }
+
   const occupationCounts = useMemo(() => tally(rows.map((r) => r.occupation), 12), [rows]);
   const placeCounts = useMemo(() => tally(rows.map((r) => (acName ? r.occupation : pcName ? r.ac_name : r.pc_name)), 10), [rows, pcName, acName]);
 
@@ -77,7 +102,6 @@ export default function Influencers() {
 
   const topPlace = placeCounts[0];
   const topJob = occupationCounts[0];
-  const withPhone = rows.filter((r) => r.contact_phone_1 || r.contact_phone_2).length;
   const placeLabel = acName ? "occupation" : pcName ? "assembly constituency" : "parliamentary constituency";
 
   const insights: string[] = [];
@@ -86,9 +110,6 @@ export default function Influencers() {
   }
   if (topJob && rows.length > 0) {
     insights.push(`${topJob.name} is the most common occupation: ${plural(topJob.count, "person", "people")}, ${Math.round((topJob.count / rows.length) * 100)}% of the list.`);
-  }
-  if (isAdmin && rows.length > 0) {
-    insights.push(`${withPhone} of ${rows.length} listed people have a phone number on file, so ${rows.length - withPhone} still need contact details.`);
   }
 
   return (
@@ -114,6 +135,28 @@ export default function Influencers() {
         </div>
       )}
 
+      {missing.length > 0 && (
+        <div className="callout-warning" role="status">
+          <div>
+            <strong>
+              {missing.length} of {allRows.length} people have no phone number, so the team cannot call them.
+            </strong>
+            <p>
+              Only {allRows.length - missing.length} can be reached by phone today.
+              {missingByPlace.length > 0 && ` Most of the gaps are in ${missingByPlace.map((m) => `${m.name} (${m.count})`).join(", ")}.`}
+            </p>
+          </div>
+          <div className="callout-actions">
+            <button type="button" className="primary" aria-pressed={phoneFilter === "yes"} onClick={() => setPhoneFilter(phoneFilter === "yes" ? "" : "yes")}>
+              {phoneFilter === "yes" ? "Show everyone" : "Show only people with a number"}
+            </button>
+            <button type="button" className="secondary-action" aria-pressed={phoneFilter === "no"} onClick={() => setPhoneFilter(phoneFilter === "no" ? "" : "no")}>
+              {phoneFilter === "no" ? "Show everyone" : "Show who is missing a number"}
+            </button>
+          </div>
+        </div>
+      )}
+
       {insights.length > 0 && (
         <ul className="takeaway-list">
           {insights.map((t) => (
@@ -131,6 +174,16 @@ export default function Influencers() {
             </option>
           ))}
         </select>
+        <select value={phoneFilter} onChange={(e) => setPhoneFilter(e.target.value as "" | "yes" | "no")} aria-label="Filter by phone number">
+          <option value="">With or without a phone number</option>
+          <option value="yes">Only people with a phone number</option>
+          <option value="no">Only people missing a phone number</option>
+        </select>
+        {isAdmin && (
+          <button type="button" className="primary" style={{ marginLeft: "auto" }} onClick={exportCsv}>
+            Download this list (CSV)
+          </button>
+        )}
       </div>
 
       <div className="grid cols-2" style={{ marginBottom: 20 }}>
@@ -145,9 +198,12 @@ export default function Influencers() {
       {!acName && <BarChartCard title={`People identified, by ${placeLabel}`} data={placeCounts} colorIndex={1} />}
 
       <div className="card" style={{ marginTop: 20 }}>
-        <h3>People listed ({rows.length})</h3>
+        <h3>
+          People listed ({rows.length}
+          {phoneFilter === "yes" ? ", all with a phone number" : phoneFilter === "no" ? ", all missing a phone number" : ""})
+        </h3>
         {rows.length === 0 ? (
-          <div className="empty-state">Nobody matches this Scope and group. Try All parliamentary constituencies or Both groups.</div>
+          <div className="empty-state">Nobody matches these filters. Try a wider Scope, Both groups, or With or without a phone number.</div>
         ) : (
           <div className="table-scroll">
             <table>
@@ -160,6 +216,7 @@ export default function Influencers() {
                   {isAdmin && <th>Name</th>}
                   {isAdmin && <th>Phone 1</th>}
                   {isAdmin && <th>Phone 2</th>}
+                  {!isAdmin && <th>Phone number</th>}
                 </tr>
               </thead>
               <tbody>
@@ -170,8 +227,11 @@ export default function Influencers() {
                     <td>{r.category || "—"}</td>
                     <td>{r.occupation || "—"}</td>
                     {isAdmin && <td>{r.contact_name || "—"}</td>}
-                    {isAdmin && <td className="tabular-nums">{r.contact_phone_1 || "—"}</td>}
+                    {isAdmin && (
+                      <td className="tabular-nums">{r.has_phone ? r.contact_phone_1 || "—" : <span className="margin-badge margin-very-close">No phone number</span>}</td>
+                    )}
                     {isAdmin && <td className="tabular-nums">{r.contact_phone_2 || "—"}</td>}
+                    {!isAdmin && <td>{r.has_phone ? "On file" : <span className="margin-badge margin-very-close">No phone number</span>}</td>}
                   </tr>
                 ))}
               </tbody>
