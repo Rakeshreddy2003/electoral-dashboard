@@ -6,11 +6,10 @@ import CandidateDrilldown from "../components/retrospective/CandidateDrilldown";
 import RetrospectiveMap from "../components/retrospective/RetrospectiveMap";
 import TopCandidatesHistory from "../components/retrospective/TopCandidatesHistory";
 import DemographicsCard from "../components/retrospective/DemographicsCard";
-import RetroExportPanel from "../components/retrospective/RetroExportPanel";
 import SeatGrid, { SeatList, SeatTally, YearSwitcher } from "../components/retrospective/SeatGrid";
 import VotesVsSeatsChart from "../components/retrospective/VotesVsSeatsChart";
 import SeatChangeChart from "../components/retrospective/SeatChangeChart";
-import { YearSummary, heroComparison, heroHeadline, seatsFlipped, turnoutInsight } from "../components/retrospective/insights";
+import { YearSummary, heroComparison, heroHeadline, seatsFlipped, sweepSentence, turnoutInsight } from "../components/retrospective/insights";
 import { partyTagStyle } from "../components/retrospective/partyColors";
 import { useGlobalFilters } from "../filters";
 
@@ -166,6 +165,13 @@ export default function Retrospective() {
               ) : (
                 <SeatGrid winners={winners} year={year} acs={acs} onSelectAc={setAcName} onSelectPc={setPcName} />
               )}
+              <ul className="hero-takeaways">
+                {[seatsFlipped(winners, year, prevYear), pcName ? null : sweepSentence(winners, new Map(acs.map((a) => [a.ac_name, a.pc_name ?? ""])), year)]
+                  .filter(Boolean)
+                  .map((t) => (
+                    <li key={t}>{t}</li>
+                  ))}
+              </ul>
             </>
           ) : null}
         </div>
@@ -317,7 +323,6 @@ export default function Retrospective() {
         <CloseContests pcName={pcName} party={partyFilter} />
       </div>
 
-      <RetroExportPanel pcName={pcName} acName={acName} />
     </>
   );
 }

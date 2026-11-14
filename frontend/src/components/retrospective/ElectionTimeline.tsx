@@ -40,7 +40,7 @@ export default function ElectionTimeline({ detail }: { detail: AcDetail }) {
 
       {detail.swing && (
         <p style={{ margin: "0 0 14px" }}>
-          <span style={{ fontSize: 12, color: "var(--text-muted)", marginRight: 8 }}>
+          <span style={{ fontSize: 14, color: "var(--text-muted)", marginRight: 8 }}>
             Vote-share swing {detail.swing.from_year} → {detail.swing.to_year}:
           </span>
           {detail.swing.by_party

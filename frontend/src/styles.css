@@ -29,10 +29,10 @@
   /* Tracked data/kicker labels -- card titles, stat labels, table headers,
      chip text -- echo crawindia.com's own use of DM Mono for exactly this
      "small tracked utility label" role. */
-  --font-mono: "DM Mono", "SFMono-Regular", Consolas, monospace;
+  --font-mono: "Manrope", system-ui, sans-serif;
   /* One signature emphasis moment per page (see PageHeader), not a general
      body face -- mirrors the parent site's "the *signals* of democracy". */
-  --font-accent: "Playfair Display", Georgia, serif;
+  --font-accent: "Manrope", system-ui, sans-serif;
 
   /* One qualitative palette for every chart/series/party in the app --
      unchanged in hue from the previous system and left alone here by
@@ -109,7 +109,7 @@ body {
   background: var(--surface-page);
   color: var(--text-primary);
   font-family: var(--font-ui);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
 }
@@ -213,7 +213,6 @@ a {
 
 .brand h1 {
   font-family: var(--font-accent);
-  font-style: italic;
   font-weight: 500;
   font-size: 20px;
   color: var(--ivory);
@@ -223,11 +222,9 @@ a {
 
 .brand .subtitle {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--gold);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
   margin-top: 2px;
 }
 
@@ -239,7 +236,7 @@ a {
 }
 
 .topnav-name {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--champagne);
   white-space: nowrap;
 }
@@ -266,10 +263,8 @@ a {
 
 .global-filters-label {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--champagne);
   margin-right: 2px;
 }
@@ -300,7 +295,7 @@ a {
   padding: 12px 16px 11px;
   color: var(--champagne);
   text-decoration: none;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
   border-bottom: 2px solid transparent;
@@ -327,12 +322,10 @@ a {
 
 .role-badge {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 13px;
   font-weight: 600;
   padding: 4px 10px;
   border-radius: 999px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
   background: color-mix(in srgb, var(--gold) 20%, transparent);
   border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
   color: var(--gold);
@@ -366,14 +359,13 @@ a {
 
 .page-header h2 em {
   font-family: var(--font-accent);
-  font-style: italic;
   font-weight: 500;
   color: var(--series-1);
 }
 
 .page-header p {
   margin: 4px 0 0;
-  font-size: 13.5px;
+  font-size: 14px;
   color: var(--text-secondary);
   max-width: 72ch;
 }
@@ -390,7 +382,7 @@ a {
 
 .chart-caption {
   margin: -10px 0 14px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-muted);
 }
 
@@ -426,7 +418,7 @@ a {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -465,7 +457,7 @@ input[type="text"] {
   color: var(--text-primary);
   border-radius: var(--radius-md);
   padding: 9px 12px;
-  font-size: 13px;
+  font-size: 14px;
   font-family: var(--font-ui);
   transition: border-color 0.12s ease, box-shadow 0.12s ease;
 }
@@ -493,7 +485,7 @@ input[type="text"] {
 
 .cross-filter-bar.empty {
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .filter-chip {
@@ -505,7 +497,7 @@ input[type="text"] {
   color: var(--series-1);
   border-radius: 999px;
   padding: 6px 8px 6px 12px;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -513,7 +505,7 @@ input[type="text"] {
   border: none;
   background: transparent;
   color: inherit;
-  font-size: 15px;
+  font-size: 17px;
   line-height: 1;
   padding: 0 4px;
   cursor: pointer;
@@ -530,7 +522,7 @@ input[type="text"] {
   color: var(--text-secondary);
   border-radius: 999px;
   padding: 6px 14px;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -610,7 +602,7 @@ h3 {
 
 .card h3 {
   margin: 0 0 14px;
-  font-size: 15.5px;
+  font-size: 17px;
 }
 
 /* .card-title used to be a small muted tracked-caps "kicker" sitting above
@@ -619,7 +611,7 @@ h3 {
    already carries. This is now just that heading. */
 .card-title {
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.01em;
   margin: 0 0 16px;
@@ -650,7 +642,7 @@ h3 {
 }
 
 .stat-tile .label {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-muted);
 }
@@ -708,7 +700,7 @@ h3 {
   color: #ffffff;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 12px;
+  font-size: 13px;
   border: 2px solid var(--surface-1);
   box-shadow: var(--shadow-pop);
 }
@@ -716,7 +708,7 @@ h3 {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 th,
@@ -731,9 +723,7 @@ thead th {
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-weight: 600;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-size: 13px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -778,9 +768,8 @@ tbody tr:last-child td {
 }
 
 .pii-pill {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.02em;
   color: var(--status-critical);
   border: 1px solid var(--status-critical);
   padding: 2px 8px;
@@ -793,7 +782,7 @@ button.primary {
   border: none;
   border-radius: var(--radius-md);
   padding: 9px 16px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   font-family: var(--font-ui);
   cursor: pointer;
@@ -836,14 +825,14 @@ button.primary:disabled {
 }
 
 .login-card p.subtitle {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-muted);
   margin: 0 0 24px;
 }
 
 .login-card label {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 4px;
@@ -857,18 +846,18 @@ button.primary:disabled {
   border: 1px solid var(--border);
   background: var(--surface-page);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .error-text {
   color: var(--status-critical);
-  font-size: 13px;
+  font-size: 14px;
   margin-top: 12px;
 }
 
 .empty-state {
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: 14px;
   padding: 28px 0;
   text-align: center;
 }
@@ -889,16 +878,14 @@ button.primary:disabled {
 }
 
 .timeline-node .yr {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .timeline-node .winner {
   font-family: var(--font-display);
-  font-size: 15.5px;
+  font-size: 17px;
   font-weight: 700;
   margin: 4px 0 6px;
 }
@@ -906,16 +893,15 @@ button.primary:disabled {
 .party-tag {
   display: inline-block;
   color: white;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.02em;
   padding: 2px 8px;
   border-radius: 999px;
 }
 
 .timeline-node .meta {
   margin-top: 8px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.6;
 }
@@ -924,7 +910,7 @@ button.primary:disabled {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 999px;
@@ -942,9 +928,8 @@ button.primary:disabled {
 }
 
 .margin-badge {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.02em;
   padding: 2px 8px;
   border-radius: 999px;
 }
@@ -987,17 +972,14 @@ button.primary:disabled {
 
 .hero-label {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--champagne);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   margin: 0 0 8px;
 }
 
 .hero-headline {
   font-family: var(--font-accent);
-  font-style: italic;
   font-weight: 500;
   font-size: 27px;
   line-height: 1.3;
@@ -1007,7 +989,7 @@ button.primary:disabled {
 }
 
 .hero-sub {
-  font-size: 13.5px;
+  font-size: 14px;
   color: color-mix(in srgb, var(--ivory) 78%, transparent);
   margin: 0 0 20px;
   max-width: 58ch;
@@ -1042,7 +1024,7 @@ button.primary:disabled {
   color: var(--ivory);
   border-radius: var(--radius-md);
   padding: 7px 14px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   font-family: var(--font-ui);
   cursor: pointer;
@@ -1084,7 +1066,7 @@ button.primary:disabled {
   background: transparent;
   color: var(--champagne);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   padding: 5px 12px;
   border-radius: 999px;
@@ -1103,7 +1085,7 @@ button.primary:disabled {
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--ivory);
 }
 
@@ -1142,7 +1124,7 @@ button.primary:disabled {
   background: none;
   border: none;
   color: var(--champagne);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   padding: 0;
   cursor: pointer;
@@ -1181,7 +1163,7 @@ button.primary:disabled {
 
 .seat-readout {
   margin: 12px 0 0;
-  font-size: 12px;
+  font-size: 13px;
   color: color-mix(in srgb, var(--ivory) 70%, transparent);
   min-height: 16px;
 }
@@ -1206,7 +1188,7 @@ button.primary:disabled {
   gap: 10px;
   padding: 7px 0;
   border-bottom: 1px solid color-mix(in srgb, var(--ivory) 12%, transparent);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--ivory);
 }
 
@@ -1247,7 +1229,7 @@ button.seat-list-name:hover {
   flex-shrink: 0;
   font-variant-numeric: tabular-nums;
   color: var(--champagne);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 /* ---------------------------------------------------------------------
@@ -1260,14 +1242,13 @@ button.seat-list-name:hover {
 
 .section-head h3 {
   font-family: var(--font-accent);
-  font-style: italic;
   font-weight: 500;
   font-size: 19px;
 }
 
 .section-head p {
   margin: 4px 0 0;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-secondary);
 }
 
@@ -1278,7 +1259,7 @@ button.seat-list-name:hover {
   margin: 12px 0 0;
   padding-left: 12px;
   border-left: 2px solid var(--gold);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-secondary);
 }
 
@@ -1308,16 +1289,14 @@ button.seat-list-name:hover {
 
 .pair-head {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 13px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   color: var(--text-muted);
 }
 
 .pair-name,
 .pair-name-btn {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
@@ -1363,7 +1342,7 @@ button.pair-name-btn:hover {
   flex-shrink: 0;
   width: 60px;
   text-align: right;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--text-secondary);
@@ -1376,7 +1355,7 @@ button.pair-name-btn:hover {
 
 .chart-footnote {
   margin: 10px 0 0;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-muted);
 }
 
@@ -1395,7 +1374,7 @@ button.pair-name-btn:hover {
 }
 
 .diverge-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -1424,12 +1403,617 @@ button.pair-name-btn:hover {
 .diverge-value {
   display: flex;
   flex-direction: column;
-  font-size: 12.5px;
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
 
 .diverge-value small {
   color: var(--text-muted);
   font-weight: 500;
-  font-size: 11px;
+  font-size: 13px;
+}
+
+/* =====================================================================
+   Readability and layout pass.
+   Sizes: 13px is the floor (captions, axis ticks), 14px table/secondary,
+   15px body, 17px card titles, 22px section heads, 30px hero headline.
+   One family (Manrope), upright, sentence case. No tracked caps.
+   ===================================================================== */
+body {
+  line-height: 1.55;
+}
+
+/* The map's own panes and controls use z-index up to 1000, the same value
+   as the sticky header, and the later DOM node wins a tie -- so the map's
+   attribution box painted over the header while scrolling. Isolating the
+   container keeps every Leaflet z-index inside the map. */
+.leaflet-container {
+  isolation: isolate;
+  z-index: 0;
+}
+
+.app-header {
+  z-index: 1100;
+}
+
+.brand h1 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.brand .subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--champagne);
+  margin-top: 2px;
+}
+
+.global-filters-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--champagne);
+}
+
+.page-tab {
+  font-size: 15px;
+  padding: 13px 18px 12px;
+}
+
+.role-badge {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+.card h3,
+.card-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.chart-caption {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 70ch;
+}
+
+thead th {
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+th,
+td {
+  padding: 11px 12px;
+}
+
+td {
+  font-size: 14px;
+}
+
+.stat-tile .label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* ---- Hero ---- */
+.hero-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--champagne);
+  margin: 0 0 10px;
+}
+
+.hero-headline {
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  max-width: 24ch;
+  margin: 0 0 12px;
+}
+
+.hero-sub {
+  font-size: 16px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--ivory) 88%, transparent);
+  max-width: 52ch;
+}
+
+.hero-sub strong {
+  color: var(--ivory);
+}
+
+.year-switcher button {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  padding: 7px 14px;
+}
+
+.seat-tally {
+  font-size: 15px;
+}
+
+.seat-row-name {
+  flex-basis: 140px;
+  font-size: 14px;
+}
+
+.seat {
+  width: 22px;
+  height: 22px;
+}
+
+.seat-readout {
+  font-size: 14px;
+  color: color-mix(in srgb, var(--ivory) 80%, transparent);
+  min-height: 21px;
+}
+
+.seat-list li {
+  font-size: 15px;
+}
+
+.seat-list-share {
+  font-size: 14px;
+}
+
+.hero-takeaways {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--ivory) 18%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hero-takeaways li {
+  font-size: 15px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--ivory) 90%, transparent);
+}
+
+.hero-takeaways strong {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.hero-map .leaflet-container {
+  min-height: 460px;
+}
+
+.hero-map p {
+  font-size: 14px;
+  padding: 10px 16px 14px;
+  margin: 0;
+}
+
+/* ---- Section heads and insight text ---- */
+.section-head {
+  margin: 36px 0 18px;
+}
+
+.section-head h3 {
+  font-family: var(--font-ui);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.section-head p {
+  font-size: 15px;
+  margin: 6px 0 0;
+  max-width: 70ch;
+}
+
+.insight {
+  margin: 16px 0 0;
+  padding: 10px 14px;
+  border-left: 3px solid var(--gold);
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.insight-standalone {
+  margin: 20px 0;
+  max-width: none;
+}
+
+/* ---- Charts built from bars ---- */
+.pair-row {
+  grid-template-columns: 84px 1fr 1fr;
+}
+
+.pair-head {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.pair-name,
+.pair-name-btn {
+  font-size: 15px;
+}
+
+.pair-track {
+  height: 14px;
+}
+
+.pair-value {
+  width: 76px;
+  font-size: 14px;
+}
+
+.diverge-row {
+  grid-template-columns: 76px 1fr 150px;
+}
+
+.diverge-name {
+  font-size: 15px;
+}
+
+.diverge-track {
+  height: 22px;
+}
+
+.diverge-value {
+  font-size: 15px;
+}
+
+.diverge-value small {
+  font-size: 13px;
+}
+
+.chart-footnote {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.timeline-node .yr {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.timeline-node .meta {
+  font-size: 14px;
+}
+
+.party-tag,
+.margin-badge,
+.swing-badge {
+  font-size: 13px;
+  padding: 3px 10px;
+}
+
+/* ---- Margin slider (close contests) ---- */
+.margin-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 320px;
+  min-width: 260px;
+}
+
+.margin-control label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.margin-control output {
+  color: var(--indigo);
+  font-weight: 800;
+}
+
+.margin-control input[type="range"] {
+  width: 100%;
+  accent-color: var(--indigo);
+  height: 28px;
+  margin: 0;
+}
+
+.margin-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.close-summary {
+  margin: 4px 0 16px;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+/* ---- Download menu in the masthead ---- */
+.download-wrap {
+  position: relative;
+}
+
+.download-trigger {
+  background: var(--gold) !important;
+  color: var(--navy) !important;
+  border: none !important;
+  font-weight: 800 !important;
+  font-size: 15px !important;
+  padding: 9px 16px !important;
+}
+
+.download-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  width: min(420px, calc(100vw - 32px));
+  background: var(--surface-1);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  padding: 20px;
+  z-index: 1200;
+}
+
+.download-panel h4 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.download-panel p {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.download-panel .field-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 14px 0 6px;
+}
+
+.download-panel select {
+  width: 100%;
+  font-size: 15px;
+}
+
+.year-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.year-chips label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.year-chips input {
+  accent-color: var(--indigo);
+}
+
+.download-panel button.primary {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px 16px;
+  font-size: 15px;
+}
+
+.download-panel .secondary-action {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.download-soon {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  background: var(--surface-sunken);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.download-soon strong {
+  color: var(--text-primary);
+}
+
+/* ---- Map controls ---- */
+.map-toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 14px 16px 0;
+}
+
+.map-toolbar button {
+  border: 1px solid color-mix(in srgb, var(--ivory) 35%, transparent);
+  background: color-mix(in srgb, var(--ivory) 10%, transparent);
+  color: var(--ivory);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 7px 14px;
+  cursor: pointer;
+  font-family: var(--font-ui);
+}
+
+.map-toolbar button[aria-pressed="true"] {
+  background: var(--gold);
+  color: var(--navy);
+  border-color: var(--gold);
+}
+
+.map-legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 10px 16px 0;
+  font-size: 14px;
+  color: var(--ivory);
+}
+
+.map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.map-label {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(20, 21, 28, 0.25) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  color: #14151c !important;
+  font-family: var(--font-ui);
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  padding: 2px 8px !important;
+  white-space: nowrap;
+}
+
+.map-label::before {
+  display: none !important;
+}
+
+.leaflet-control-zoom a {
+  width: 34px !important;
+  height: 34px !important;
+  line-height: 34px !important;
+  font-size: 18px !important;
+}
+
+/* ---- Influencers summary ---- */
+.stat-row {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin: 4px 0 28px;
+}
+
+.stat-row .stat-tile .value {
+  font-size: 40px;
+}
+
+.page-lead {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  max-width: 40ch;
+  margin: 0 0 6px;
+}
+
+.page-lead-sub {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 62ch;
+  margin: 0 0 24px;
+}
+
+@media (max-width: 900px) {
+  .hero-headline {
+    font-size: 26px;
+  }
+  .hero-main {
+    padding: 22px 18px;
+  }
+  .pair-row {
+    grid-template-columns: 70px 1fr;
+  }
+  .pair-head span:last-child {
+    display: none;
+  }
+  .pair-row > .pair-cell:nth-child(3) {
+    grid-column: 2;
+  }
+  .diverge-row {
+    grid-template-columns: 64px 1fr 110px;
+  }
+  .app-header-top {
+    flex-wrap: wrap;
+  }
+}
+
+.leaflet-tooltip.map-hover {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 8px 12px;
+  color: var(--text-primary);
+}
+
+.takeaway-list {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 78ch;
+}
+
+.takeaway-list li {
+  padding: 10px 14px;
+  border-left: 3px solid var(--gold);
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.app-header-user .download-panel button.primary {
+  background: var(--indigo);
+  color: #ffffff;
+  border: none;
+}
+
+.app-header-user .download-panel button.primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--indigo) 85%, black);
+}
+
+.app-header-user .download-panel button.secondary-action {
+  color: var(--text-primary);
+}
+
+.app-header-user {
+  flex-wrap: wrap;
+  flex-shrink: 1;
+  min-width: 0;
+  justify-content: flex-end;
+}
+
+@media (max-width: 900px) {
+  .topnav-name {
+    display: none;
+  }
+  .app-header-top {
+    gap: 12px;
+  }
 }

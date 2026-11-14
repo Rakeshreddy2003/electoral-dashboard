@@ -99,3 +99,19 @@ export function turnoutInsight(trend: { year: number; avg_turnout_percentage: nu
   if (verb === "held steady") return `Average turnout held steady at ${last.avg_turnout_percentage!.toFixed(1)}% between ${first.year} and ${last.year}.`;
   return `Average turnout ${verb} from ${first.avg_turnout_percentage!.toFixed(1)}% in ${first.year} to ${last.avg_turnout_percentage!.toFixed(1)}% in ${last.year}, a change of ${Math.abs(delta).toFixed(1)} points.`;
 }
+
+// Parliamentary constituencies where one party won every assembly seat.
+export function sweepSentence(winners: WinnerRow[], pcOf: Map<string, string>, year: number): string | null {
+  const byPc = new Map<string, string[]>();
+  winners
+    .filter((w) => w.year === year)
+    .forEach((w) => {
+      const pc = pcOf.get(w.ac_name);
+      if (pc) byPc.set(pc, [...(byPc.get(pc) ?? []), w.party]);
+    });
+  const swept = [...byPc.entries()].filter(([, parties]) => parties.length >= 3 && parties.every((p) => p === parties[0]));
+  if (byPc.size === 0) return null;
+  if (swept.length === 0) return `No parliamentary constituency was swept by a single party in ${year}.`;
+  const list = swept.map(([pc, parties]) => `${parties[0]} won all ${parties.length} seats in ${pc}`);
+  return `${list.join("; ")} in ${year}.`;
+}

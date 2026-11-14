@@ -21,3 +21,7 @@ export const TILE_URL = "https://services.arcgisonline.com/ArcGIS/rest/services/
 export const TILE_ATTRIBUTION =
   '&copy; <a href="https://www.esri.com">Esri</a> &mdash; Esri, HERE, Garmin, FAO, NOAA, USGS';
 export const TILE_MAX_ZOOM = 16; // Esri's World_Light_Gray_Base caps out here; deeper zoom reuses the last level
+
+// Place-name overlay for the same basemap family, drawn above the shapes so
+// towns and districts stay readable under the coloured constituencies.
+export const TILE_LABELS_URL = "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}";

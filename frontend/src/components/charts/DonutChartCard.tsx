@@ -48,7 +48,7 @@ function renderLabel({ cx, cy, midAngle, innerRadius, outerRadius, pct, fill }: 
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
   const textColor = luminance(fill) > 0.6 ? "#14151c" : "#ffffff";
   return (
-    <text x={x} y={y} fill={textColor} fontSize={12} fontWeight={700} textAnchor="middle" dominantBaseline="central">
+    <text x={x} y={y} fill={textColor} fontSize={13} fontWeight={700} textAnchor="middle" dominantBaseline="central">
       {pct}%
     </text>
   );
@@ -110,7 +110,7 @@ export default function DonutChartCard({ title, caption, data, colorOffset = 0, 
                   borderRadius: 10,
                   boxShadow: "var(--shadow-pop)",
                   padding: "8px 12px",
-                  fontSize: 13,
+                  fontSize: 14,
                   fontFamily: "var(--font-ui)",
                 }}
                 labelStyle={{ color: "var(--text-primary)", fontWeight: 600 }}

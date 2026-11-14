@@ -54,7 +54,7 @@ function AxisTick({ x, y, payload }: { x: number; y: number; payload: { value: s
   const lines = wrapLabel(payload.value);
   const startDy = -((lines.length - 1) * LINE_HEIGHT) / 2 + 4;
   return (
-    <text x={x} y={y} textAnchor="end" fontSize={12} fill="var(--text-muted)">
+    <text x={x} y={y} textAnchor="end" fontSize={13} fill="var(--text-muted)">
       {lines.map((line, i) => (
         <tspan key={i} x={x} dy={i === 0 ? startDy : LINE_HEIGHT}>
           {line}
@@ -101,8 +101,8 @@ export default function BarChartCard({
         <ResponsiveContainer width="100%" height={height}>
           <BarChart data={data} layout="vertical" margin={{ left: 12, right: 56 }}>
             <CartesianGrid stroke="var(--gridline)" horizontal={false} />
-            <XAxis type="number" stroke="var(--text-muted)" fontSize={12} allowDecimals={false} />
-            <YAxis type="category" dataKey="name" stroke="var(--text-muted)" fontSize={12} width={Y_AXIS_WIDTH} tick={AxisTick as never} />
+            <XAxis type="number" stroke="var(--text-muted)" fontSize={13} allowDecimals={false} />
+            <YAxis type="category" dataKey="name" stroke="var(--text-muted)" fontSize={13} width={Y_AXIS_WIDTH} tick={AxisTick as never} />
             <Tooltip
               cursor={{ fill: "var(--surface-sunken)" }}
               contentStyle={{
@@ -111,7 +111,7 @@ export default function BarChartCard({
                 borderRadius: 10,
                 boxShadow: "var(--shadow-pop)",
                 padding: "8px 12px",
-                fontSize: 13,
+                fontSize: 14,
                 fontFamily: "var(--font-ui)",
               }}
               labelStyle={{ color: "var(--text-primary)", fontWeight: 600, marginBottom: 2 }}
@@ -131,7 +131,7 @@ export default function BarChartCard({
                   fillOpacity={activeCode ? (d.code === activeCode ? 1 : 0.3) : 1}
                 />
               ))}
-              <LabelList dataKey="count" position="right" formatter={format as never} style={{ fill: "var(--text-secondary)", fontSize: 12 }} />
+              <LabelList dataKey="count" position="right" formatter={format as never} style={{ fill: "var(--text-secondary)", fontSize: 14 }} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>

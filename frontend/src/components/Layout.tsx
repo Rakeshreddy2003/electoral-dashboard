@@ -4,6 +4,7 @@ import { useAuth } from "../auth/AuthContext";
 import { api } from "../api/client";
 import { Ac } from "../filters";
 import { RESPONSES_PAGE_ENABLED } from "../featureFlags";
+import DownloadMenu from "./DownloadMenu";
 
 const PAGES = [
   { to: "/retrospective", label: "Retrospective Data" },
@@ -47,13 +48,14 @@ export default function Layout() {
       <header className="app-header">
         <div className="app-header-top">
           <div className="brand">
-            <h1>North Andhra Livelihoods Survey</h1>
+            <h1>Electoral Dashboard</h1>
             <div className="subtitle">C-RAW India</div>
           </div>
           <div className="app-header-user">
+            <DownloadMenu pcName={pcName} acName={acName} />
             <span className="role-badge">{role}</span>
             <span className="topnav-name">{fullName}</span>
-            <button className="primary" style={{ background: "var(--border)", color: "var(--text-primary)" }} onClick={onLogout}>
+            <button className="primary" onClick={onLogout}>
               Sign out
             </button>
           </div>
