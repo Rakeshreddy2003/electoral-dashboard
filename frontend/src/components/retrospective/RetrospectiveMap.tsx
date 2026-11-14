@@ -35,6 +35,11 @@ function FitToFeatures({ data }: { data: FeatureCollection | null }) {
   return null;
 }
 
+function mergeFeatureCollections(...collections: (FeatureCollection | null)[]): FeatureCollection | null {
+  const features = collections.flatMap((c) => c?.features ?? []);
+  return features.length ? { type: "FeatureCollection", features } : null;
+}
+
 export default function RetrospectiveMap({
   selectedPc,
   onSelectPc,
@@ -46,11 +51,17 @@ export default function RetrospectiveMap({
 }) {
   const [pcBoundaries, setPcBoundaries] = useState<FeatureCollection | null>(null);
   const [acBoundaries, setAcBoundaries] = useState<FeatureCollection | null>(null);
+  // The rest of Andhra Pradesh's ~140 other ACs -- pure background context so
+  // the 5 surveyed PCs read as part of the real state map, not a shape
+  // floating in empty space. Rendered non-interactive and never colored by
+  // party; it's geography, not data this dashboard has an opinion on.
+  const [apContext, setApContext] = useState<FeatureCollection | null>(null);
   const [overview, setOverview] = useState<{ acs: AcOverview[]; pcs: PcOverview[] } | null>(null);
 
   useEffect(() => {
     fetch("/pc_boundaries.geojson").then((r) => r.json()).then(setPcBoundaries);
     fetch("/ac_boundaries.geojson").then((r) => r.json()).then(setAcBoundaries);
+    fetch("/ap_context_boundaries.geojson").then((r) => r.json()).then(setApContext);
     api.get("/retrospective/ap-overview").then((res) => setOverview(res.data));
   }, []);
 
@@ -63,6 +74,12 @@ export default function RetrospectiveMap({
       : null;
 
   const displayData = selectedPc ? acsForSelectedPc : pcBoundaries;
+  // At the top-level (no PC picked) the map should fit the WHOLE state, so
+  // North Andhra reads as the corner of AP it actually is rather than
+  // filling the frame as if it were the entire map. Once a PC is picked we
+  // go back to fitting tightly to just its 7 ACs -- the context layer is
+  // still drawn underneath then, it's just mostly off-screen, which is fine.
+  const boundsTarget = selectedPc ? acsForSelectedPc : mergeFeatureCollections(pcBoundaries, apContext);
 
   function tooltipHtml(isAc: boolean, name: string, pcName?: string): string {
     if (isAc) {
@@ -85,7 +102,7 @@ export default function RetrospectiveMap({
       <MapContainer
         center={[18.0, 83.3]}
         zoom={7}
-        style={{ height: 400 }}
+        style={{ height: 480 }}
         zoomControl={false}
         scrollWheelZoom={false}
         doubleClickZoom={false}
@@ -93,7 +110,15 @@ export default function RetrospectiveMap({
         touchZoom={false}
       >
         <TileLayer attribution={TILE_ATTRIBUTION} url={TILE_URL} maxZoom={TILE_MAX_ZOOM} />
-        <FitToFeatures data={displayData} />
+        <FitToFeatures data={boundsTarget} />
+        {apContext && (
+          <GeoJSON
+            key="ap-context"
+            data={apContext}
+            interactive={false}
+            style={{ color: "var(--border)", weight: 1, fillColor: "var(--surface-sunken)", fillOpacity: 0.6 }}
+          />
+        )}
         {displayData && (
           <GeoJSON
             key={selectedPc || "all"}

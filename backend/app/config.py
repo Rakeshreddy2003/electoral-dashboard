@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     odk_project_id: int = 1
     odk_form_id: str = "na_livelihoods_survey_v4"
     odk_sync_interval_minutes: int = 20
+    # Set false to pause pulling from ODK Central entirely -- the scheduler
+    # just never starts, so the API still serves whatever's already in
+    # Postgres. Flip back to true (or unset) to resume live syncing.
+    odk_sync_enabled: bool = True
 
     # The 5 parliamentary constituencies this survey covers.
     pc_names: list[str] = [

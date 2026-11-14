@@ -3,10 +3,11 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { api } from "../api/client";
 import { Ac } from "../filters";
+import { RESPONSES_PAGE_ENABLED } from "../featureFlags";
 
 const PAGES = [
   { to: "/retrospective", label: "Retrospective Data" },
-  { to: "/responses", label: "Form Responses" },
+  ...(RESPONSES_PAGE_ENABLED ? [{ to: "/responses", label: "Form Responses" }] : []),
   { to: "/influencers", label: "Influencers / Volunteers" },
 ];
 

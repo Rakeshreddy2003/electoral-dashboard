@@ -4,7 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import routes_auth, routes_influencers, routes_responses, routes_retrospective
-from app.database import Base, engine
+from app.config import settings
+from app.database import Base, engine, ensure_schema
 from app.sync.scheduler import start_scheduler
 
 logging.basicConfig(level=logging.INFO)
@@ -30,7 +31,11 @@ app.include_router(routes_influencers.router)
 @app.on_event("startup")
 def on_startup():
     Base.metadata.create_all(bind=engine)
-    start_scheduler()
+    ensure_schema()
+    if settings.odk_sync_enabled:
+        start_scheduler()
+    else:
+        logging.info("ODK sync disabled (ODK_SYNC_ENABLED=false) -- serving existing data only")
 
 
 @app.get("/api/health")

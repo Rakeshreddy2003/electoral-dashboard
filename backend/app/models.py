@@ -76,6 +76,12 @@ class SurveyResponse(Base):
     # Location
     parliamentary_constituency = Column(String(128), nullable=True, index=True)
     assembly_constituency = Column(String(128), nullable=True, index=True)
+    # The real ECI AC number for assembly_constituency, backfilled from
+    # app.constituencies_config.AC_NO -- the numeric join key to EciResult.
+    # constituency_no / SecretariatProfile.ac_no, kept alongside the name
+    # string rather than replacing it (the name is still what the UI
+    # filters/displays by).
+    ac_no = Column(Integer, nullable=True, index=True)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
 

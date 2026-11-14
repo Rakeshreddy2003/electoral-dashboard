@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Retrospective from "./pages/Retrospective";
 import Responses from "./pages/Responses";
 import Influencers from "./pages/Influencers";
+import { RESPONSES_PAGE_ENABLED } from "./featureFlags";
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { isAuthenticated } = useAuth();
@@ -42,7 +43,10 @@ export default function App() {
       >
         <Route index element={<Navigate to="/retrospective" replace />} />
         <Route path="retrospective" element={<Retrospective />} />
-        <Route path="responses" element={<Responses />} />
+        <Route
+          path="responses"
+          element={RESPONSES_PAGE_ENABLED ? <Responses /> : <Navigate to="/retrospective" replace />}
+        />
         <Route path="influencers" element={<Influencers />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

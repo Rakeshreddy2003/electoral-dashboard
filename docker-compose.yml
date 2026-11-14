@@ -40,6 +40,9 @@ services:
       ODK_PROJECT_ID: ${ODK_PROJECT_ID:-1}
       ODK_FORM_ID: ${ODK_FORM_ID:-na_livelihoods_survey_v4}
       ODK_SYNC_INTERVAL_MINUTES: ${ODK_SYNC_INTERVAL_MINUTES:-20}
+      # Set false to pause pulling from ODK Central -- the API still serves
+      # whatever's already in Postgres. See backend/app/sync/scheduler.py.
+      ODK_SYNC_ENABLED: ${ODK_SYNC_ENABLED:-true}
       # Temporary: skips login and role checks, every request is treated as
       # admin. Set AUTH_DISABLED=false in .env (or unset it) to re-require
       # login -- see backend/app/deps.py::get_current_user.

@@ -1,10 +1,15 @@
 from fastapi import APIRouter, Depends, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+import io
 import json
+import re
 
-from app.constituencies_config import PC_TO_ACS, ac_to_pc, is_configured
+import pandas as pd
+
+from app.constituencies_config import PC_TO_ACS, ac_to_no, ac_to_pc, is_configured
 from app.database import get_db
 from app.deps import require_any
 from app.models import EciResult, SecretariatProfile
@@ -21,7 +26,7 @@ def config(_=Depends(require_any)):
 def list_acs(_=Depends(require_any), db: Session = Depends(get_db)):
     rows = db.query(EciResult.constituency_name).filter(EciResult.level == "AC").distinct().order_by(EciResult.constituency_name).all()
     acs = [r[0] for r in rows]
-    return [{"ac_name": ac, "pc_name": ac_to_pc(ac)} for ac in acs]
+    return [{"ac_name": ac, "ac_no": ac_to_no(ac), "pc_name": ac_to_pc(ac)} for ac in acs]
 
 
 @router.get("/results")
@@ -413,3 +418,108 @@ def demographics(
         "caste_breakdown": _pct_breakdown(caste_totals, caste_denominator),
         "religion_breakdown": _pct_breakdown(religion_totals, religion_denominator),
     }
+
+
+_RESULT_COLUMNS = (
+    "year",
+    "constituency_name",
+    "pc_name",
+    "candidate_name",
+    "party",
+    "position",
+    "votes",
+    "vote_share_percentage",
+    "margin",
+    "margin_percentage",
+    "turnout_percentage",
+    "total_electors",
+    "total_votes",
+)
+
+
+def _results_to_df(rows: list[EciResult]) -> pd.DataFrame:
+    return pd.DataFrame([{c: getattr(r, c) for c in _RESULT_COLUMNS} for r in rows])
+
+
+def _safe_sheet_name(name: str) -> str:
+    """Excel sheet names: <=31 chars, no \\/?*[]: characters."""
+    return re.sub(r"[\\/?*\[\]:]", " ", name)[:31]
+
+
+@router.get("/export.xlsx")
+def export_xlsx(
+    ac_name: str | None = Query(default=None),
+    pc_name: str | None = Query(default=None),
+    scope: str = Query(default="both", pattern="^(ae|ge|both)$"),
+    years: list[int] | None = Query(default=None),
+    _=Depends(require_any),
+    db: Session = Depends(get_db),
+):
+    """
+    Download retrospective election results as an .xlsx workbook: one sheet
+    per constituency rather than one flat table, so a reader isn't stuck
+    filtering a single sheet by hand. Scoped the same way the page itself
+    is -- to one AC (plus its owning PC's Lok Sabha result), to one PC (plus
+    every assembly segment under it), or to all of North Andhra when
+    neither is picked -- and to AE (assembly), GE (Lok Sabha), or both
+    levels via `scope`.
+    """
+
+    def ae_rows(constituency_name: str | None = None, pc: str | None = None) -> list[EciResult]:
+        q = db.query(EciResult).filter(EciResult.level == "AC")
+        if constituency_name:
+            q = q.filter(EciResult.constituency_name == constituency_name)
+        elif pc:
+            q = q.filter(EciResult.pc_name == pc)
+        if years:
+            q = q.filter(EciResult.year.in_(years))
+        return q.order_by(EciResult.constituency_name, EciResult.year.desc(), EciResult.position).all()
+
+    def ge_rows(pc: str | None = None) -> list[EciResult]:
+        q = db.query(EciResult).filter(EciResult.level == "PC")
+        if pc:
+            q = q.filter(EciResult.pc_name == pc)
+        if years:
+            q = q.filter(EciResult.year.in_(years))
+        return q.order_by(EciResult.pc_name, EciResult.year.desc(), EciResult.position).all()
+
+    buf = io.BytesIO()
+    sheet_count = 0
+    with pd.ExcelWriter(buf, engine="openpyxl") as writer:
+        if ac_name:
+            owning_pc = pc_name or ac_to_pc(ac_name)
+            if scope in ("ae", "both"):
+                _results_to_df(ae_rows(constituency_name=ac_name)).to_excel(writer, sheet_name=_safe_sheet_name(f"{ac_name} (AE)"), index=False)
+                sheet_count += 1
+            if scope in ("ge", "both") and owning_pc:
+                _results_to_df(ge_rows(pc=owning_pc)).to_excel(writer, sheet_name=_safe_sheet_name(f"{owning_pc} (GE)"), index=False)
+                sheet_count += 1
+        elif pc_name:
+            if scope in ("ge", "both"):
+                _results_to_df(ge_rows(pc=pc_name)).to_excel(writer, sheet_name=_safe_sheet_name(f"{pc_name} (GE)"), index=False)
+                sheet_count += 1
+            if scope in ("ae", "both"):
+                for ac in PC_TO_ACS.get(pc_name, []):
+                    df = _results_to_df(ae_rows(constituency_name=ac))
+                    if df.empty:
+                        continue
+                    df.to_excel(writer, sheet_name=_safe_sheet_name(f"{ac} (AE)"), index=False)
+                    sheet_count += 1
+        else:
+            if scope in ("ae", "both"):
+                _results_to_df(ae_rows()).to_excel(writer, sheet_name="Assembly (AE)", index=False)
+                sheet_count += 1
+            if scope in ("ge", "both"):
+                _results_to_df(ge_rows()).to_excel(writer, sheet_name="Lok Sabha (GE)", index=False)
+                sheet_count += 1
+
+        if sheet_count == 0:
+            pd.DataFrame([{"message": "No data for the selected filters"}]).to_excel(writer, sheet_name="No data", index=False)
+
+    buf.seek(0)
+    filename = _safe_sheet_name(ac_name or pc_name or "north_andhra").replace(" ", "_") + "_retrospective.xlsx"
+    return StreamingResponse(
+        buf,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )

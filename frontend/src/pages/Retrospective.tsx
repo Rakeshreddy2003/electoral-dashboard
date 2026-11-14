@@ -9,6 +9,7 @@ import CandidateDrilldown from "../components/retrospective/CandidateDrilldown";
 import RetrospectiveMap from "../components/retrospective/RetrospectiveMap";
 import TopCandidatesHistory from "../components/retrospective/TopCandidatesHistory";
 import DemographicsCard from "../components/retrospective/DemographicsCard";
+import RetroExportPanel from "../components/retrospective/RetroExportPanel";
 import { partyColor } from "../components/retrospective/partyColors";
 import { useGlobalFilters } from "../filters";
 
@@ -133,6 +134,8 @@ export default function Retrospective() {
         accent="Data"
         subtitle="Historical election results and demographic baseline across North Andhra's 5 parliamentary constituencies, 2009–2024."
       />
+
+      <RetroExportPanel pcName={pcName} acName={acName} />
 
       {/* Basic information left, map right -- and the left side only shows
           what actually has data for the current scope: a region-wide

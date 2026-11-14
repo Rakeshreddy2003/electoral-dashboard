@@ -15,6 +15,7 @@ from pathlib import Path
 from pyodk.client import Client
 
 from app.config import settings
+from app.constituencies_config import ac_to_no
 from app.database import SessionLocal
 from app.models import SurveyResponse, SyncState
 from app.sync.field_map import AC_SLUG_TO_NAME, FIELD_MAP, PC_SLUG_TO_NAME, RESPONDENT_CATEGORY_LABELS, get_nested
@@ -206,6 +207,7 @@ def sync_once() -> int:
             record.submitter_name = system.get("submitterName")
             record.parliamentary_constituency = flat.get("parliamentary_constituency")
             record.assembly_constituency = flat.get("assembly_constituency")
+            record.ac_no = ac_to_no(flat.get("assembly_constituency"))
             record.latitude = flat.get("latitude")
             record.longitude = flat.get("longitude")
             record.gender = flat.get("gender")
