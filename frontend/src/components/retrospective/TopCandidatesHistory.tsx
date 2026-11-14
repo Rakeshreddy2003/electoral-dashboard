@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api/client";
-import { partyColor } from "./partyColors";
+import { partyTagStyle } from "./partyColors";
 
 interface Candidate {
   position: number;
@@ -54,7 +54,7 @@ export default function TopCandidatesHistory({ acName, pcName, title }: { acName
                     <td>{c.position}</td>
                     <td>{c.candidate_name}</td>
                     <td>
-                      <span className="party-tag" style={{ background: partyColor(c.party) }}>
+                      <span className="party-tag" style={partyTagStyle(c.party)}>
                         {c.party}
                       </span>
                     </td>

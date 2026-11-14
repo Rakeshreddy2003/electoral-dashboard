@@ -95,7 +95,7 @@ export default function RetrospectiveMap({
   return (
     <div>
       {selectedPc && (
-        <button className="primary" style={{ marginBottom: 10, background: "var(--border)", color: "var(--text-primary)" }} onClick={() => onSelectPc("")}>
+        <button className="hero-back-btn" onClick={() => onSelectPc("")}>
           ← Back to all 5 constituencies
         </button>
       )}

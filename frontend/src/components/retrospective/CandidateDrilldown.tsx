@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { api } from "../../api/client";
-import { partyColor } from "./partyColors";
+import { partyColor, partyTagStyle } from "./partyColors";
 
 interface Candidate {
   year: number;
@@ -80,7 +80,7 @@ export default function CandidateDrilldown({ acName, years }: { acName: string; 
                     <td>{r.position}</td>
                     <td>{r.candidate_name}</td>
                     <td>
-                      <span className="party-tag" style={{ background: partyColor(r.party) }}>
+                      <span className="party-tag" style={partyTagStyle(r.party)}>
                         {r.party}
                       </span>
                     </td>

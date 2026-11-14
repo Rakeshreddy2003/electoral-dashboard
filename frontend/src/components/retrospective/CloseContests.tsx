@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { api } from "../../api/client";
-import { partyColor } from "./partyColors";
+import { partyTagStyle } from "./partyColors";
 
 interface Contest {
   ac_name: string;
@@ -145,13 +145,13 @@ export default function CloseContests({ pcName, party }: { pcName: string; party
                   <td>{r.pc_name}</td>
                   <td>{r.year}</td>
                   <td>
-                    {r.winner_name} <span className="party-tag" style={{ background: partyColor(r.winner_party) }}>{r.winner_party}</span>
+                    {r.winner_name} <span className="party-tag" style={partyTagStyle(r.winner_party)}>{r.winner_party}</span>
                   </td>
                   <td>
                     {r.runner_up_name ? (
                       <>
                         {r.runner_up_name}{" "}
-                        <span className="party-tag" style={{ background: partyColor(r.runner_up_party) }}>
+                        <span className="party-tag" style={partyTagStyle(r.runner_up_party)}>
                           {r.runner_up_party}
                         </span>
                       </>

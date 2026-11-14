@@ -1,8 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { api } from "../api/client";
-import GroupedBarChartCard from "../components/charts/GroupedBarChartCard";
-import StatTile from "../components/charts/StatTile";
-import PageHeader from "../components/PageHeader";
 import ElectionTimeline, { AcDetail } from "../components/retrospective/ElectionTimeline";
 import CloseContests from "../components/retrospective/CloseContests";
 import CandidateDrilldown from "../components/retrospective/CandidateDrilldown";
@@ -10,10 +7,12 @@ import RetrospectiveMap from "../components/retrospective/RetrospectiveMap";
 import TopCandidatesHistory from "../components/retrospective/TopCandidatesHistory";
 import DemographicsCard from "../components/retrospective/DemographicsCard";
 import RetroExportPanel from "../components/retrospective/RetroExportPanel";
-import { partyColor } from "../components/retrospective/partyColors";
+import SeatGrid, { SeatList, SeatTally, YearSwitcher } from "../components/retrospective/SeatGrid";
+import VotesVsSeatsChart from "../components/retrospective/VotesVsSeatsChart";
+import SeatChangeChart from "../components/retrospective/SeatChangeChart";
+import { YearSummary, heroComparison, heroHeadline, seatsFlipped, turnoutInsight } from "../components/retrospective/insights";
+import { partyTagStyle } from "../components/retrospective/partyColors";
 import { useGlobalFilters } from "../filters";
-
-const MAX_PARTY_SERIES = 6; // past this, fold into "Other" -- see dataviz anti-patterns (>7 color classes blur)
 
 interface Winner {
   year: number;
@@ -37,67 +36,59 @@ interface PcHistoryRow {
 
 export default function Retrospective() {
   const { pcName, acName, setPcName, setAcName, acs } = useGlobalFilters();
-  // Cross-filter: click a party's bar in the seats-by-year chart to filter
-  // the winning-candidates table and the close-contest list by it, the
-  // same click-to-filter contract Form Responses already has.
+  // Cross-filter: click a party name in the votes-vs-seats chart, or a seat
+  // in the hero grid, to filter the winning-candidates table and the
+  // close-contest list by it -- the same click-to-filter contract Form
+  // Responses already has.
   const [partyFilter, setPartyFilter] = useState<string | null>(null);
   const [winners, setWinners] = useState<Winner[]>([]);
   const [turnoutTrend, setTurnoutTrend] = useState<{ year: number; avg_turnout_percentage: number | null }[]>([]);
   const [pcHistory, setPcHistory] = useState<PcHistoryRow[]>([]);
   const [acDetail, setAcDetail] = useState<AcDetail | null>(null);
+  const [partySummary, setPartySummary] = useState<YearSummary[]>([]);
+  const [pickedYear, setPickedYear] = useState<number | null>(null);
 
   useEffect(() => {
+    // A fast response to a later, narrower request (e.g. picking an AC
+    // right after a PC) can arrive before a slower, wider one still in
+    // flight -- without this guard the wider response would land last and
+    // overwrite the correct, narrower state.
+    let current = true;
     const params: Record<string, string> = {};
     if (acName) params.ac_name = acName;
     else if (pcName) params.pc_name = pcName;
 
-    api.get("/retrospective/winners-by-year", { params }).then((res) => setWinners(res.data));
-    api.get("/retrospective/turnout-trend", { params: pcName ? { pc_name: pcName } : {} }).then((res) => setTurnoutTrend(res.data));
+    api.get("/retrospective/winners-by-year", { params }).then((res) => current && setWinners(res.data));
+    api.get("/retrospective/turnout-trend", { params: pcName ? { pc_name: pcName } : {} }).then((res) => current && setTurnoutTrend(res.data));
+    api.get("/retrospective/party-summary", { params: pcName ? { pc_name: pcName } : {} }).then((res) => current && setPartySummary(res.data));
+    return () => {
+      current = false;
+    };
   }, [pcName, acName]);
 
   useEffect(() => {
+    let current = true;
     if (!pcName) {
       setPcHistory([]);
       return;
     }
-    api.get("/retrospective/pc-history", { params: { pc_name: pcName } }).then((res) => setPcHistory(res.data));
+    api.get("/retrospective/pc-history", { params: { pc_name: pcName } }).then((res) => current && setPcHistory(res.data));
+    return () => {
+      current = false;
+    };
   }, [pcName]);
 
   useEffect(() => {
+    let current = true;
     if (!acName) {
       setAcDetail(null);
       return;
     }
-    api.get("/retrospective/ac-detail", { params: { ac_name: acName } }).then((res) => setAcDetail(res.data));
+    api.get("/retrospective/ac-detail", { params: { ac_name: acName } }).then((res) => current && setAcDetail(res.data));
+    return () => {
+      current = false;
+    };
   }, [acName]);
-
-  // Seats won by party, split by year -- a flat all-years total hides which
-  // party is currently ahead; small-party tail folds into "Other" past
-  // MAX_PARTY_SERIES so the chart stays legible (dataviz anti-patterns).
-  const { seatsByYear, partySeriesKeys } = useMemo(() => {
-    const years = [...new Set(winners.map((w) => w.year))].sort();
-    const totalsByParty = new Map<string, number>();
-    winners.forEach((w) => totalsByParty.set(w.party, (totalsByParty.get(w.party) || 0) + 1));
-    const topParties = [...totalsByParty.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, MAX_PARTY_SERIES)
-      .map(([p]) => p);
-    const hasOther = totalsByParty.size > topParties.length;
-
-    const rows = years.map((year) => {
-      const row: Record<string, number | string> = { year };
-      topParties.forEach((p) => (row[p] = 0));
-      if (hasOther) row["Other"] = 0;
-      winners
-        .filter((w) => w.year === year)
-        .forEach((w) => {
-          const key = topParties.includes(w.party) ? w.party : "Other";
-          row[key] = (row[key] as number) + 1;
-        });
-      return row;
-    });
-    return { seatsByYear: rows, partySeriesKeys: hasOther ? [...topParties, "Other"] : topParties };
-  }, [winners]);
 
   // Group the flat winners-by-year rows by AC (newest year first within
   // each group) so the table reads as "35 AC blocks of 4 years" instead of
@@ -117,102 +108,83 @@ export default function Retrospective() {
     }));
   }, [winners, partyFilter]);
 
-  const latestYear = turnoutTrend.length ? turnoutTrend[turnoutTrend.length - 1] : null;
-  const earliestYear = turnoutTrend.length ? turnoutTrend[0] : null;
-  const turnoutDelta =
-    latestYear?.avg_turnout_percentage != null && earliestYear?.avg_turnout_percentage != null
-      ? +(latestYear.avg_turnout_percentage - earliestYear.avg_turnout_percentage).toFixed(1)
-      : null;
+  const years = useMemo(() => [...new Set(winners.map((w) => w.year))].sort(), [winners]);
+  const year = pickedYear != null && years.includes(pickedYear) ? pickedYear : years[years.length - 1];
+  const prevYear = years[years.indexOf(year) - 1] ?? null;
+  const summary = partySummary.find((s) => s.year === year);
+  const prevSummary = partySummary.find((s) => s.year === prevYear);
 
   const latestPcWinner = pcHistory.filter((r) => r.position === 1).sort((a, b) => b.year - a.year)[0];
-  const acsInPc = pcName ? acs.filter((a) => a.pc_name === pcName).length : 0;
+  const scopeLabel = pcName ? `${pcName} parliamentary constituency` : "all of North Andhra";
+  const acLatest = acName ? [...winners].sort((a, b) => b.year - a.year)[0] : null;
+
+  const headline = acName
+    ? acLatest
+      ? `${acLatest.candidate_name} of ${acLatest.party} won ${acName} in ${acLatest.year} with ${acLatest.vote_share_percentage?.toFixed(1)}% of the vote`
+      : null
+    : year != null
+    ? heroHeadline(winners, year, pcName ? `in ${pcName}` : "across North Andhra")
+    : null;
+  const comparison = !acName && year != null ? heroComparison(winners, year, prevYear) : null;
 
   return (
     <>
-      <PageHeader
-        title="Retrospective Data"
-        accent="Data"
-        subtitle="Historical election results and demographic baseline across North Andhra's 5 parliamentary constituencies, 2009–2024."
-      />
+      <section className="hero">
+        <div className="hero-main">
+          <p className="hero-label">
+            {acName ? `${acName} assembly constituency` : pcName ? `${pcName} parliamentary constituency` : "North Andhra"}, assembly elections {years[0]} to{" "}
+            {years[years.length - 1]}
+          </p>
+          {headline ? <h2 className="hero-headline">{headline}</h2> : <h2 className="hero-headline">Loading results</h2>}
+          <p className="hero-sub">
+            {comparison}
+            {acName && acDetail?.pc_name ? `Part of ${acDetail.pc_name} parliamentary constituency.` : ""}
+            {!acName && pcName && latestPcWinner
+              ? ` Its Lok Sabha seat went to ${latestPcWinner.candidate_name} of ${latestPcWinner.party} in ${latestPcWinner.year}.`
+              : ""}
+          </p>
 
-      <RetroExportPanel pcName={pcName} acName={acName} />
-
-      {/* Basic information left, map right -- and the left side only shows
-          what actually has data for the current scope: a region-wide
-          summary with nothing selected, the PC's latest MP result once a
-          PC is picked, the AC's latest result once an AC is picked. */}
-      {/* align-items: stretch here, overriding the grid default -- an
-          "at a glance" card is inherently short content, and letting it
-          sit short next to a tall map either left page-background showing
-          below it (default align-items: start) or stretched the card with
-          nothing to fill the extra height (default stretch, no centering).
-          Stretching AND centering the content together is what actually
-          uses the space instead of just moving where it's empty. */}
-      <div className="grid cols-2" style={{ alignItems: "stretch" }}>
-        <div className="card" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <h3>{acName ? `${acName} — at a glance` : pcName ? `${pcName} — at a glance` : "North Andhra — at a glance"}</h3>
-          {acName && acDetail ? (
+          {acName ? (
+            <SeatList
+              rows={[...winners]
+                .sort((a, b) => b.year - a.year)
+                .map((w) => ({ key: `${w.ac_name}-${w.year}`, label: String(w.year), winner: w }))}
+            />
+          ) : year != null ? (
             <>
-              <div className="stat-tile stat-tile-brand" >
-                <div className="value" style={{ fontSize: 28 }}>
-                  {acDetail.timeline[acDetail.timeline.length - 1]?.winner_name ?? "—"}
-                </div>
-                <div className="label">Winner, {acDetail.timeline[acDetail.timeline.length - 1]?.year}</div>
+              <div className="hero-controls">
+                <YearSwitcher years={years} year={year} onChange={setPickedYear} />
+                <SeatTally winners={winners} year={year} />
               </div>
-              <p style={{ margin: 0, fontSize: 13, color: "var(--text-secondary)" }}>
-                Part of {acDetail.pc_name ?? "—"} parliamentary constituency. See the full election timeline and demographic
-                baseline below.
-              </p>
+              {pcName ? (
+                <SeatList
+                  rows={winners
+                    .filter((w) => w.year === year)
+                    .map((w) => ({ key: w.ac_name, label: w.ac_name, winner: w, select: w.ac_name }))}
+                  onSelect={setAcName}
+                />
+              ) : (
+                <SeatGrid winners={winners} year={year} acs={acs} onSelectAc={setAcName} onSelectPc={setPcName} />
+              )}
             </>
-          ) : pcName ? (
-            <>
-              <div className="stat-tile stat-tile-brand" >
-                <div className="value" style={{ fontSize: 28 }}>
-                  {latestPcWinner?.candidate_name ?? "—"}
-                </div>
-                <div className="label">
-                  Lok Sabha winner, {latestPcWinner?.year ?? "—"}
-                  {latestPcWinner?.party ? ` · ${latestPcWinner.party}` : ""}
-                </div>
-              </div>
-              <p style={{ margin: 0, fontSize: 13, color: "var(--text-secondary)" }}>
-                {acsInPc} assembly segments tracked in {pcName}. Lok Sabha results, demographic baseline and assembly history
-                below.
-              </p>
-            </>
-          ) : turnoutDelta !== null ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <StatTile
-                label={`Turnout change, ${earliestYear?.year}→${latestYear?.year}`}
-                value={`${turnoutDelta > 0 ? "+" : ""}${turnoutDelta} pp`}
-                tone={turnoutDelta >= 0 ? "good" : "bad"}
-              />
-              <div style={{ display: "flex", gap: 16 }}>
-                <StatTile label="Assembly seats" value={35} tone="neutral" fill />
-                <StatTile label="Parliamentary seats" value={5} tone="neutral" fill />
-              </div>
-            </div>
-          ) : (
-            <div className="empty-state">No data yet</div>
-          )}
+          ) : null}
         </div>
 
-        <div className="card">
-          <h3>Constituency map</h3>
+        <div className="hero-map">
           <RetrospectiveMap selectedPc={pcName} onSelectPc={setPcName} onSelectAc={setAcName} />
         </div>
-      </div>
+      </section>
 
       {acName && acDetail ? (
         <>
           <ElectionTimeline detail={acDetail} />
-          <DemographicsCard acName={acName} />
-          <TopCandidatesHistory acName={acName} title={`${acName} — historical top 3 candidates (assembly election)`} />
+          <TopCandidatesHistory acName={acName} title={`${acName}: top three candidates in each assembly election`} />
           <CandidateDrilldown acName={acName} years={acDetail.timeline.map((t) => t.year)} />
+          <DemographicsCard acName={acName} />
         </>
       ) : pcName ? (
         <>
-          <div className="card" style={{ marginTop: 20, marginBottom: 20 }}>
+          <div className="card">
             <h3>Lok Sabha results — {pcName}</h3>
             {pcHistory.filter((r) => r.position === 1).length === 0 ? (
               <div className="empty-state">No data yet</div>
@@ -232,12 +204,13 @@ export default function Retrospective() {
                   <tbody>
                     {pcHistory
                       .filter((r) => r.position === 1)
+                      .sort((a, b) => b.year - a.year)
                       .map((r, i) => (
                         <tr key={i}>
                           <td style={{ fontWeight: 600 }}>{r.year}</td>
                           <td>{r.candidate_name}</td>
                           <td>
-                            <span className="party-tag" style={{ background: partyColor(r.party) }}>
+                            <span className="party-tag" style={partyTagStyle(r.party)}>
                               {r.party}
                             </span>
                           </td>
@@ -251,53 +224,45 @@ export default function Retrospective() {
               </div>
             )}
           </div>
+          <TopCandidatesHistory pcName={pcName} title={`${pcName}: top three candidates in each Lok Sabha election`} />
           <DemographicsCard pcName={pcName} />
-          <TopCandidatesHistory pcName={pcName} title={`${pcName} — historical top 3 candidates (Lok Sabha)`} />
         </>
       ) : (
         <DemographicsCard />
       )}
 
-      <h3 style={{ margin: "28px 0 14px" }}>Historical data</h3>
-
-      <div className={`cross-filter-bar${!partyFilter ? " empty" : ""}`}>
-        {partyFilter ? (
-          <>
-            <span className="filter-chip">
-              Party: {partyFilter}
-              <button type="button" onClick={() => setPartyFilter(null)} title="Remove">
-                ×
-              </button>
-            </span>
-            <button type="button" className="clear-filters-btn" onClick={() => setPartyFilter(null)}>
-              Clear
-            </button>
-          </>
-        ) : (
-          "Click a party's bar below to filter the winning-candidates table and close contests by it."
-        )}
-      </div>
-
-      {/* Region-wide seat composition by year makes sense with no AC
-          selected (comparing how many of the 35, or of one PC's 7, seats
-          each party held) -- at AC level it degenerates into a trivial
-          0-or-1-seat bar per party per year, which is what prompted "I
-          don't understand the need of this." The AC's own election
-          history is already covered better by ElectionTimeline (above)
-          and CandidateDrilldown's per-year vote-share chart, so this
-          chart is simply not shown once an AC is picked, rather than
-          shown in a form that doesn't carry information at that level. */}
       {!acName && (
-        <GroupedBarChartCard
-          title="Assembly seats won by party, by year"
-          caption={`Assembly constituency results, 2009–2024${pcName ? ` — ${pcName}` : " (all 5 PCs, 35 ACs)"}`}
-          data={seatsByYear}
-          xKey="year"
-          seriesKeys={partySeriesKeys}
-          colorFor={(key) => (key === "Other" ? "var(--text-muted)" : partyColor(key))}
-          onSeriesClick={(key) => key !== "Other" && setPartyFilter(partyFilter === key ? null : key)}
-          activeKey={partyFilter}
-        />
+        <>
+          <div className="section-head">
+            <h3>Party landscape</h3>
+            <p>How many seats each party held, and how that vote share converted into seats, in {scopeLabel}.</p>
+          </div>
+
+          <div className="grid cols-2">
+            <VotesVsSeatsChart summary={summary} scopeLabel={scopeLabel} activeParty={partyFilter} onPartyClick={(p) => setPartyFilter(partyFilter === p ? null : p)} />
+            <SeatChangeChart summary={summary} previous={prevSummary} scopeLabel={scopeLabel} flippedSentence={seatsFlipped(winners, year, prevYear)} />
+          </div>
+
+          {turnoutInsight(turnoutTrend) && <p className="insight insight-standalone">{turnoutInsight(turnoutTrend)}</p>}
+
+          <div className={`cross-filter-bar${!partyFilter ? " empty" : ""}`}>
+            {partyFilter ? (
+              <>
+                <span className="filter-chip">
+                  Party: {partyFilter}
+                  <button type="button" onClick={() => setPartyFilter(null)} title="Remove">
+                    ×
+                  </button>
+                </span>
+                <button type="button" className="clear-filters-btn" onClick={() => setPartyFilter(null)}>
+                  Clear
+                </button>
+              </>
+            ) : (
+              "Click a party above, or a seat in the grid, to filter the winning-candidates table and close contests by it."
+            )}
+          </div>
+        </>
       )}
 
       {!acName && !pcName && (
@@ -331,7 +296,7 @@ export default function Retrospective() {
                           ) : null}
                           <td>{w.candidate_name}</td>
                           <td>
-                            <span className="party-tag" style={{ background: partyColor(w.party) }}>
+                            <span className="party-tag" style={partyTagStyle(w.party)}>
                               {w.party}
                             </span>
                           </td>
@@ -351,6 +316,8 @@ export default function Retrospective() {
       <div style={{ marginTop: 20 }}>
         <CloseContests pcName={pcName} party={partyFilter} />
       </div>
+
+      <RetroExportPanel pcName={pcName} acName={acName} />
     </>
   );
 }

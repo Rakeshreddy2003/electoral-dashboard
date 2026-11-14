@@ -51,6 +51,18 @@
   --status-warning: #c8860a;
   --status-serious: #d47a4a;
   --status-critical: #c73636;
+
+  /* Masthead/hero identity: deep navy and indigo with a muted antique-gold
+     accent, kept to the header and hero band rather than the whole page --
+     a fully dark working surface would sink BSP/YSRCP blues into the
+     background and fight TDP yellow against the gold. Ivory surfaces hold
+     the actual data below so party colour and the map tiles stay legible. */
+  --navy: #0b1021;
+  --indigo: #232c63;
+  --charcoal: #1c1f26;
+  --gold: #b8964b;
+  --champagne: #e7dec8;
+  --ivory: #f7f4ec;
 }
 
 /*
@@ -176,9 +188,8 @@ a {
  */
 .app-header {
   flex-shrink: 0;
-  background: var(--surface-1);
-  border-bottom: 1px solid var(--border);
-  box-shadow: var(--shadow-card);
+  background: linear-gradient(180deg, var(--navy), var(--indigo));
+  border-bottom: 1px solid var(--gold);
   position: sticky;
   top: 0;
   /* Leaflet's own panes (tooltip/popup panes especially) use z-index up to
@@ -201,8 +212,11 @@ a {
 }
 
 .brand h1 {
-  font-size: 18px;
-  font-weight: 800;
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 20px;
+  color: var(--ivory);
   margin: 0;
   line-height: 1.25;
 }
@@ -211,7 +225,7 @@ a {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
-  color: var(--series-1);
+  color: var(--gold);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-top: 2px;
@@ -226,12 +240,20 @@ a {
 
 .topnav-name {
   font-size: 13px;
-  color: var(--text-secondary);
+  color: var(--champagne);
   white-space: nowrap;
 }
 
 .app-header-user button.primary {
   padding: 7px 14px;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--ivory) 30%, transparent);
+  color: var(--ivory);
+}
+
+.app-header-user button.primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ivory) 12%, transparent);
+  filter: none;
 }
 
 .global-filters {
@@ -248,21 +270,35 @@ a {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-muted);
+  color: var(--champagne);
   margin-right: 2px;
+}
+
+.global-filters select {
+  background: color-mix(in srgb, var(--ivory) 10%, transparent);
+  border-color: color-mix(in srgb, var(--ivory) 25%, transparent);
+  color: var(--ivory);
+}
+
+.global-filters select:hover {
+  border-color: var(--gold);
+}
+
+.global-filters select option {
+  color: var(--text-primary);
 }
 
 .page-tabs {
   display: flex;
   gap: 4px;
   padding: 0 28px;
-  border-top: 1px solid var(--gridline);
+  border-top: 1px solid color-mix(in srgb, var(--ivory) 14%, transparent);
 }
 
 .page-tab {
   display: block;
   padding: 12px 16px 11px;
-  color: var(--text-secondary);
+  color: var(--champagne);
   text-decoration: none;
   font-size: 13.5px;
   font-weight: 600;
@@ -272,12 +308,12 @@ a {
 }
 
 .page-tab.active {
-  color: var(--series-1);
-  border-bottom-color: var(--series-1);
+  color: var(--gold);
+  border-bottom-color: var(--gold);
 }
 
 .page-tab:hover:not(.active) {
-  color: var(--text-primary);
+  color: var(--ivory);
 }
 
 .main-content {
@@ -297,8 +333,9 @@ a {
   border-radius: 999px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  background: color-mix(in srgb, var(--series-3) 16%, transparent);
-  color: var(--series-3);
+  background: color-mix(in srgb, var(--gold) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  color: var(--gold);
 }
 
 @media (max-width: 900px) {
@@ -919,10 +956,480 @@ button.primary:disabled {
 
 .margin-close {
   background: color-mix(in srgb, var(--status-warning) 20%, transparent);
-  color: #8a5a00;
+  color: color-mix(in srgb, var(--status-warning) 65%, black);
 }
 
 .margin-comfortable {
   background: color-mix(in srgb, var(--status-good) 14%, transparent);
   color: var(--status-good);
+}
+
+/* ---------------------------------------------------------------------
+   Retrospective hero: a navy/indigo band carrying the page's one serif
+   headline moment, the seat grid/list, and the map -- the only place on
+   the page the masthead's dark identity continues into the body. Ivory
+   surfaces below hold the actual data tables and charts.
+   --------------------------------------------------------------------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 0;
+  background: linear-gradient(135deg, var(--navy), var(--indigo));
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 28px;
+}
+
+.hero-main {
+  padding: 28px 30px;
+  min-width: 0;
+}
+
+.hero-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--champagne);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 8px;
+}
+
+.hero-headline {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 27px;
+  line-height: 1.3;
+  color: var(--ivory);
+  margin: 0 0 10px;
+  max-width: 34ch;
+}
+
+.hero-sub {
+  font-size: 13.5px;
+  color: color-mix(in srgb, var(--ivory) 78%, transparent);
+  margin: 0 0 20px;
+  max-width: 58ch;
+}
+
+.hero-sub:empty {
+  display: none;
+}
+
+.hero-map {
+  min-width: 0;
+}
+
+.hero-map .leaflet-container {
+  height: 100%;
+  min-height: 360px;
+  border-radius: 0;
+}
+
+.hero-map > div {
+  height: 100%;
+}
+
+.hero-map p {
+  color: color-mix(in srgb, var(--ivory) 65%, transparent) !important;
+}
+
+.hero-back-btn {
+  margin-bottom: 10px;
+  background: color-mix(in srgb, var(--ivory) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ivory) 30%, transparent);
+  color: var(--ivory);
+  border-radius: var(--radius-md);
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-ui);
+  cursor: pointer;
+}
+
+.hero-back-btn:hover {
+  background: color-mix(in srgb, var(--ivory) 20%, transparent);
+  border-color: var(--gold);
+}
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+  .hero-map .leaflet-container {
+    min-height: 280px;
+  }
+}
+
+.hero-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.year-switcher {
+  display: inline-flex;
+  gap: 2px;
+  background: color-mix(in srgb, var(--ivory) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ivory) 20%, transparent);
+  border-radius: 999px;
+  padding: 3px;
+}
+
+.year-switcher button {
+  border: none;
+  background: transparent;
+  color: var(--champagne);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.year-switcher button[aria-pressed="true"] {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+.seat-tally {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  color: var(--ivory);
+}
+
+.seat-tally li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.seat-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  border: 1px solid color-mix(in srgb, var(--navy) 60%, transparent);
+  flex-shrink: 0;
+}
+
+/* Seat grid: one square per assembly seat, grouped by parliamentary
+   constituency row -- the legislature's own seat-composition shape,
+   rather than a generic KPI tile grid standing in for it. */
+.seat-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.seat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.seat-row-name {
+  flex: 0 0 128px;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--champagne);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.seat-row-name:hover {
+  color: var(--gold);
+  text-decoration: underline;
+}
+
+.seat-row-squares {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.seat {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--navy) 50%, transparent);
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.08s ease;
+}
+
+.seat:hover,
+.seat:focus-visible {
+  transform: scale(1.18);
+  outline: 1px solid var(--gold);
+  outline-offset: 1px;
+}
+
+.seat-readout {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--ivory) 70%, transparent);
+  min-height: 16px;
+}
+
+/* Seat list: the PC-scoped and AC-scoped hero states, one row per seat
+   or per election year, sharing the same swatch + name + winner + party
+   + share layout. */
+.seat-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.seat-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--ivory) 12%, transparent);
+  font-size: 13px;
+  color: var(--ivory);
+}
+
+.seat-list-name {
+  flex: 0 0 150px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+button.seat-list-name {
+  background: none;
+  border: none;
+  text-align: left;
+  color: var(--ivory);
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+button.seat-list-name:hover {
+  color: var(--gold);
+  text-decoration: underline;
+}
+
+.seat-list-winner {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: color-mix(in srgb, var(--ivory) 80%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.seat-list-share {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--champagne);
+  font-size: 12px;
+}
+
+/* ---------------------------------------------------------------------
+   Section head: a bare heading + one-line explanation introducing a
+   group of cards below it, on the ivory working surface.
+   --------------------------------------------------------------------- */
+.section-head {
+  margin: 8px 0 16px;
+}
+
+.section-head h3 {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 19px;
+}
+
+.section-head p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Derived-insight sentence under a chart -- a gold rule on the left marks
+   it as a finding pulled from the data above, not a caption describing
+   the chart's axes (that's .chart-caption). */
+.insight {
+  margin: 12px 0 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--gold);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.insight-standalone {
+  margin: -8px 0 20px;
+}
+
+/* Vote-share vs seat-share paired bars. */
+.pair-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pair-row {
+  display: grid;
+  grid-template-columns: 76px 1fr 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 6px 4px;
+  border-radius: var(--radius-sm);
+}
+
+.pair-row-active {
+  background: var(--surface-sunken);
+}
+
+.pair-head {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.pair-name,
+.pair-name-btn {
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+button.pair-name-btn {
+  background: none;
+  border: none;
+  text-align: left;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+button.pair-name-btn:hover {
+  color: var(--gold);
+  text-decoration: underline;
+}
+
+.pair-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pair-track {
+  flex: 1;
+  height: 10px;
+  background: var(--surface-sunken);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.pair-bar {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.pair-value {
+  flex-shrink: 0;
+  width: 60px;
+  text-align: right;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+.pair-value small {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.chart-footnote {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Seats gained/lost diverging bars. */
+.diverge-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.diverge-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 120px;
+  gap: 10px;
+  align-items: center;
+}
+
+.diverge-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.diverge-track {
+  display: flex;
+  height: 18px;
+  background: var(--surface-sunken);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.diverge-half {
+  flex: 1;
+  display: flex;
+}
+
+.diverge-loss {
+  justify-content: flex-end;
+}
+
+.diverge-bar {
+  display: block;
+  height: 100%;
+}
+
+.diverge-value {
+  display: flex;
+  flex-direction: column;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.diverge-value small {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 11px;
 }

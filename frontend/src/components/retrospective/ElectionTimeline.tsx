@@ -1,4 +1,4 @@
-import { partyColor } from "./partyColors";
+import { partyTagStyle } from "./partyColors";
 
 export interface TimelineYear {
   year: number;
@@ -60,7 +60,7 @@ export default function ElectionTimeline({ detail }: { detail: AcDetail }) {
           <div key={t.year} className="timeline-node">
             <div className="yr">{t.year} (Assembly)</div>
             <div className="winner">{t.winner_name}</div>
-            <span className="party-tag" style={{ background: partyColor(t.party) }}>
+            <span className="party-tag" style={partyTagStyle(t.party)}>
               {t.party}
             </span>
             <div className="meta">
@@ -80,7 +80,7 @@ export default function ElectionTimeline({ detail }: { detail: AcDetail }) {
           <div className="timeline-node" style={{ background: "var(--surface-1)", borderStyle: "dashed" }}>
             <div className="yr">{detail.pc_latest.year} (Lok Sabha — {detail.pc_name})</div>
             <div className="winner">{detail.pc_latest.candidate_name}</div>
-            <span className="party-tag" style={{ background: partyColor(detail.pc_latest.party) }}>
+            <span className="party-tag" style={partyTagStyle(detail.pc_latest.party)}>
               {detail.pc_latest.party}
             </span>
             <div className="meta">
