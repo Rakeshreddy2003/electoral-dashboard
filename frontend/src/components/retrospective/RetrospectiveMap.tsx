@@ -116,7 +116,12 @@ export default function RetrospectiveMap({
             key="ap-context"
             data={apContext}
             interactive={false}
-            style={{ color: "var(--border)", weight: 1, fillColor: "var(--surface-sunken)", fillOpacity: 0.6 }}
+            // Needs real contrast against the Esri light-gray basemap, not
+            // the page's own --border/--surface-sunken tokens -- those are
+            // tuned for a light page background and were nearly invisible
+            // here, which read as "the rest of the state is missing" when
+            // the ~140 other ACs were actually rendering all along.
+            style={{ color: "#9aa0b4", weight: 1, fillColor: "#c7cce0", fillOpacity: 0.55 }}
           />
         )}
         {displayData && (
